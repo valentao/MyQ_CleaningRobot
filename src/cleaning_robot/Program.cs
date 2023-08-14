@@ -1,11 +1,106 @@
-﻿using System.CommandLine;
+﻿using Newtonsoft.Json;
+
+using static cleaning_robot.Movement;
 
 namespace cleaning_robot;
 class Program
 {
+    public static void WriteBatteryStatus(int batteryStatus)
+    {
+        Console.WriteLine($"Battery: {batteryStatus}");
+    }
+
+
     public static void Main(string[] args)
     {
         Console.WriteLine($"Number of arguments: {args.Length}");
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            Console.WriteLine($"Argument {i}: {args[i]}");
+        }
+
+        Robot robot = Robot.GetRobot();
+
+        FileInfo jsonFile = new FileInfo("test0.json"); // args[0]
+
+        Input? input = JsonConvert.DeserializeObject<Input>(ReadJson(jsonFile));
+
+        robot.Visited = new List<Cell>();
+        robot.Cleaned = new List<Cell>();
+
+        if (input != null)
+        {
+            robot.Map = input.map;
+            robot.Battery = input.battery;
+            if (input.start != null)
+            {
+                robot.Position = new Position(input.start.X, input.start.Y, input.start.facing);
+            }
+
+            if (input.commands != null)
+            {
+                Command[] tmpCmd = new Command[input.commands.Length];
+
+                for (int i = 0; i < input.commands.Length; i++)
+                {
+                    tmpCmd[i] = Command.GetCommand(input.commands[i]);
+                }
+
+                robot.CommandsArray = tmpCmd;
+            }
+        }
+
+        // set start position out of map
+        //robot.Position = new Position(3, 1, robot.Position.facing);
+
+        Cell tmpPosition = new Cell(robot.Position.X, robot.Position.Y);
+        string cellAccessibility = robot.Map[tmpPosition.X][tmpPosition.Y];
+
+        // S - can be occupied and cleaned
+        // C -  can’t be occupied or cleaned
+        // null - empty cell
+        if (cellAccessibility != null && cellAccessibility == "C") 
+        {
+            robot.Visited.Add(tmpPosition);
+        }
+        else
+        {
+            Console.WriteLine($"Robot is out of map. Starting position X:{tmpPosition.X}, Y:{tmpPosition.Y} is not accessible.");
+        }
+
+        foreach (Command cmd in robot.CommandsArray)
+        {
+            if (robot.Battery >= cmd.Cost)
+            {
+                robot.Battery -= cmd.Cost;
+
+                if ((cmd == Command.TurnLeft || cmd == Command.TurnRight) && cmd.Turn != 0)
+                {
+                    robot.Position.facing = Turn(robot.Position.facing, cmd.Turn);
+                }
+
+                if (cmd == Command.Advance)
+                {
+                    robot.Position = Advance(robot.Position);
+                }
+
+                if (cmd == Command.Back)
+                {
+                    robot.Position = Back(robot.Position);
+                }
+
+                if (cmd == Command.Clean)
+                {
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.");
+                WriteOutput(robot, new FileInfo(args[1]));
+                break;
+            }
+        }
 
         if (args.Length == 2)
         {
@@ -16,7 +111,12 @@ class Program
             FileInfo outputFile = new FileInfo(outputFileArg);
             if (inputFile.Exists && inputFile.Extension == ".json")
             {
-                ReadFile(inputFile);
+                //ReadFile(inputFile);
+                string json = ReadJson(inputFile);
+                Console.WriteLine(json);
+                var x = JsonConvert.DeserializeObject<Input>(json);
+
+                ;
             }
             else
             {
@@ -37,9 +137,56 @@ class Program
             Console.WriteLine("the application requires exactly 2 arguments");
         }
 
+        WriteOutput(robot, new FileInfo(args[1]));
+
         Console.ReadLine();
         Environment.Exit(0);
     }
+
+    static string ReadJson(FileInfo file)
+    {
+        //StringBuilder sb = new();
+        //File.ReadLines(file.FullName).ToList()
+        //    .ForEach(line => sb.Append(line));
+
+        //return sb.ToString().Trim();
+
+        string example = File.ReadAllText(file.FullName);
+        return System.String.Concat(example.Where(c => !Char.IsWhiteSpace(c)));
+    }
+
+    static void WriteOutput(Robot robot, FileInfo file)
+    {
+        //var start = input?.start;
+        //var line = input?.map?[start.X];
+        //var row = line[start.Y];
+        Output output = new Output();
+        output.battery = robot.Battery;
+        output.final = robot.Position;
+
+        // TODO - select distinct from 
+        //Cell[] d = robot.Visited.ToArray();
+        //Cell[] distinct = d.SelectMany(a => a).Distinct().ToArray();
+        //var distinct = array.SelectMany(a => a).Distinct().ToArray();
+
+        // TODO - sort Array by X
+        //Cell[] x = robot.Visited.ToArray();
+        //var sorted = x.OrderBy(y => y[0]).ThenBy(y => y[1]).ThenBy(y => y[2]);
+
+        output.visited = robot.Visited.ToArray();
+        output.cleaned = robot.Cleaned.ToArray();
+
+        //Cell c1 = new Cell(1,0);
+        //Cell c2 = new Cell(2, 0);
+        //Cell c3 = new Cell(3, 0);
+        //output.visited = new Cell[] { c1, c2, c3 };
+        //output.cleaned = new Cell[] { c1, c2 };
+
+        string outputJson = JsonConvert.SerializeObject(output);
+        FileInfo fileJsonOutput = new FileInfo("test_output.json"); // file
+        File.WriteAllText(fileJsonOutput.FullName, outputJson);
+    }
+
 
     static void ReadFile(FileInfo file)
     {
