@@ -157,7 +157,7 @@ class Program
             else
             {
                 Console.WriteLine($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.");
-                Document.WriteToJson(robot, new FileInfo(args[1]));
+                //Document.WriteToJson(robot, new FileInfo(args[1]));
                 break;
             }
         }
