@@ -33,12 +33,9 @@ public class Robot
 
     private Robot()
     {
-
+        Visited = new List<Cell>();
+        Cleaned = new List<Cell>();
     }
-
-    public List<List<string>>? Map { get; set; }
-
-    //public Facing FacingDirection { get; set; }
 
     public int Battery { get; set; }
 
@@ -49,7 +46,6 @@ public class Robot
     public List<Cell> Visited { get; set; }
 
     public List<Cell> Cleaned { get; set; }
-
 
     //Lock Object
     private static object lockThis = new object();

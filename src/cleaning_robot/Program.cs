@@ -9,59 +9,6 @@ class Program
         Console.WriteLine($"Battery: {batteryStatus}");
     }
 
-    public static readonly string[] backOffCommands0 = new string[] { "TR", "A", "TL" };
-    public static readonly string[] backOffCommands1 = new string[] { "TR", "A", "TR" };
-    public static readonly string[] backOffCommands2 = new string[] { "TR", "A", "TR" };
-    public static readonly string[] backOffCommands3 = new string[] { "TR", "B", "TR", "A" };
-    public static readonly string[] backOffCommands4 = new string[] { "TL", "TL", "A" };
-
-
-    /// <summary>
-    /// Back off sequence when robot hits an obstacle
-    /// </summary>
-    /// <param name="hitObstacleCount">Number of attempts to back off</param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    public static bool BackOff(int hitObstacleCount)
-    {
-        Console.WriteLine($"Hit obstacle count: {hitObstacleCount}");
-
-        string[] backOffCommands;
-        bool backOff = true;
-
-        // all attempts failed
-        if (hitObstacleCount == 5)
-        {
-            backOff = false;
-            Console.WriteLine($"End of program.");
-            return backOff;
-        }
-        else
-        {   
-            // back off sequence was successful
-            if (hitObstacleCount == 2)
-            {
-                Console.WriteLine($"Back off sequence {hitObstacleCount} was successful");
-                return true;
-            }
-
-            backOffCommands = hitObstacleCount switch
-            {
-                0 => backOffCommands0,
-                1 => backOffCommands1,
-                2 => backOffCommands2,
-                3 => backOffCommands3,
-                4 => backOffCommands4,
-                _ => throw new Exception($"Unknown back off sequence")
-            };
-
-            Console.WriteLine($"Back off sequence {hitObstacleCount} commands {string.Join(", ", backOffCommands)}");
-
-            hitObstacleCount += 1;
-            return BackOff(hitObstacleCount);
-        }
-    }
-
     public static void Main(string[] args)
     {
         //bool backoff = BackOff(0);
@@ -75,17 +22,19 @@ class Program
         }
 
         Robot robot = Robot.GetRobot();
-
-        FileInfo jsonFile = new FileInfo("test0.json"); // args[0]
+        
+        FileInfo jsonFile = new FileInfo("test0.json"); // TODO args[0]
 
         Input? input = JsonConvert.DeserializeObject<Input>(ReadJson(jsonFile));
 
-        robot.Visited = new List<Cell>();
-        robot.Cleaned = new List<Cell>();
+        //robot.Visited = new List<Cell>();
+        //robot.Cleaned = new List<Cell>();
+
+        List<List<string>>? mapX = new List<List<string>>(); // TODO
 
         if (input != null)
         {
-            robot.Map = input.map;
+            mapX = input.map;
             robot.Battery = input.battery;
             if (input.start != null)
             {
@@ -94,7 +43,7 @@ class Program
 
             if (input.commands != null)
             {
-                Command[] tmpCmd = new Command[input.commands.Length];
+                Command[]? tmpCmd = new Command[input.commands.Length];
 
                 for (int i = 0; i < input.commands.Length; i++)
                 {
@@ -105,23 +54,79 @@ class Program
             }
         }
 
+        if (mapX != null)
+        {
+            Map map = Map.GetMap(mapX);
+        }
+        bool test = Map.IsCellAccessible(robot.Position.X, robot.Position.Y);
+        if (test)
+        {
+            robot.Visited.Add(new Cell(robot.Position.X, robot.Position.Y));
+        }
+
+
+        ;       
+
         // set start position out of map
         //robot.Position = new Position(3, 1, robot.Position.facing);
 
         Cell tmpPosition = new Cell(robot.Position.X, robot.Position.Y);
-        string cellAccessibility = robot.Map[tmpPosition.X][tmpPosition.Y];
+        //string? cellAccessibility = robot?.Map?[tmpPosition.X][tmpPosition.Y];
 
-        // S - can be occupied and cleaned
-        // C -  can’t be occupied or cleaned
-        // null - empty cell
-        if (cellAccessibility != null && cellAccessibility == "C")
-        {
-            robot.Visited.Add(tmpPosition);
-        }
-        else
-        {
-            Console.WriteLine($"Robot is out of map. Starting position X:{tmpPosition.X}, Y:{tmpPosition.Y} is not accessible.");
-        }
+        tmpPosition = new Cell(0, 5);
+        robot.Position = new Position(tmpPosition.X, tmpPosition.Y, robot.Position.facing);
+
+        //int rowCount = robot.Map.Count; // X length
+        //int colCount = robot.Map[0].Count(); // Y length
+
+        //if (robot.Position.X < 0 || robot.Position.Y < 0)
+        //{
+            
+        //}
+        //else
+        //{
+        //    if (robot.Position.X > rowCount)
+        //    {
+        //        Console.WriteLine($"Position X:{robot.Position.X} is out of map. Max X value is {rowCount}");
+        //    }
+        //    else
+        //    {
+        //        if (robot.Position.Y > colCount)
+        //        {
+        //            Console.WriteLine($"Position Y:{robot.Position.Y} is out of map. Max Y value is {colCount}");
+        //        }
+        //    }
+        //}
+        
+
+        //var row = robot.Map.Where(r => r[tmpPosition.X])
+
+
+        //var element = (from row in robot.Map
+        //               from col in row
+        //               where col[tmpPosition.X] == tmpPosition.X
+        //               select col).FirstOrDefault();
+
+
+
+        //var element = (from sublist in userList
+        //               from item in sublist
+        //               where item.uniqueidentifier == someid
+        //               select item).FirstOrDefault();
+
+        //var t = robot.Map[0];
+
+        //bool v = robot.Map.Exists(robot.Map[0]);
+
+
+        List<List<string>> tmpMap = new List<List<string>>();
+        //tmpMap.Add();
+
+        //robot.Map.Exists(tmpPosition.X, tmpPosition.Y);
+
+        ;
+        
+        
 
         foreach (Command cmd in robot.CommandsArray)
         {
