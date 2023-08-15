@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using static cleaning_robot.Movement;
+using static cleaning_robot.Document;
 
 namespace cleaning_robot;
 class Program
@@ -25,7 +26,7 @@ class Program
         
         FileInfo jsonFile = new FileInfo("test0.json"); // TODO args[0]
 
-        Input? input = JsonConvert.DeserializeObject<Input>(ReadJson(jsonFile));
+        Input? input = JsonConvert.DeserializeObject<Input>(Document.Read(jsonFile));
 
         //robot.Visited = new List<Cell>();
         //robot.Cleaned = new List<Cell>();
@@ -156,7 +157,7 @@ class Program
             else
             {
                 Console.WriteLine($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.");
-                WriteOutput(robot, new FileInfo(args[1]));
+                Document.WriteToJson(robot, new FileInfo(args[1]));
                 break;
             }
         }
@@ -171,11 +172,9 @@ class Program
             if (inputFile.Exists && inputFile.Extension == ".json")
             {
                 //ReadFile(inputFile);
-                string json = ReadJson(inputFile);
+                string json = Read(inputFile);
                 Console.WriteLine(json);
                 var x = JsonConvert.DeserializeObject<Input>(json);
-
-                ;
             }
             else
             {
@@ -186,39 +185,16 @@ class Program
             {
                 Console.WriteLine($"Output file {outputFileArg} already exists");
             }
-            else
-            {
-                WriteFile(outputFile, inputFile);
-            }
+            //else
+            //{
+            //    WriteFile(outputFile, inputFile);
+            //}
         }
         else
         {
             Console.WriteLine("the application requires exactly 2 arguments");
         }
 
-        WriteOutput(robot, new FileInfo(args[1]));
-
-        Console.ReadLine();
-        Environment.Exit(0);
-    }
-
-    static string ReadJson(FileInfo file)
-    {
-        //StringBuilder sb = new();
-        //File.ReadLines(file.FullName).ToList()
-        //    .ForEach(line => sb.Append(line));
-
-        //return sb.ToString().Trim();
-
-        string example = File.ReadAllText(file.FullName);
-        return System.String.Concat(example.Where(c => !Char.IsWhiteSpace(c)));
-    }
-
-    static void WriteOutput(Robot robot, FileInfo file)
-    {
-        //var start = input?.start;
-        //var line = input?.map?[start.X];
-        //var row = line[start.Y];
         Output output = new Output();
         output.battery = robot.Battery;
         output.final = robot.Position;
@@ -242,26 +218,10 @@ class Program
         //output.cleaned = new Cell[] { c1, c2 };
 
         string outputJson = JsonConvert.SerializeObject(output);
-        FileInfo fileJsonOutput = new FileInfo("test_output.json"); // file
-        File.WriteAllText(fileJsonOutput.FullName, outputJson);
-    }
+        FileInfo fileJsonOutput = new FileInfo("test_output.json"); // TODO new FileInfo(args[1])
+        Document.Write(fileJsonOutput, outputJson);
 
-
-    static void ReadFile(FileInfo file)
-    {
-        File.ReadLines(file.FullName).ToList()
-            .ForEach(line => Console.WriteLine(line));
-    }
-
-    static void WriteFile(FileInfo file, FileInfo inputFile)
-    {
-        List<string> lines = new List<string>();
-
-        File.ReadLines(inputFile.FullName).ToList()
-            .ForEach(line => lines.Add(line));
-
-        string[] linesArray = lines.ToArray();
-
-        File.WriteAllLines(file.FullName, linesArray);
+        Console.ReadLine();
+        Environment.Exit(0);
     }
 }
