@@ -32,6 +32,9 @@ public class Command
     /// </summary>
     public string Description { get; }
 
+    /// <summary>
+    /// Turn dirrection 1=right, -1=left
+    /// </summary>
     public int Turn { get; }
 
     // Create available commands
