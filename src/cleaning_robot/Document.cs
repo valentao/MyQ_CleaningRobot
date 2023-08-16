@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿namespace cleaning_robot;
 
-namespace cleaning_robot;
-
+/// <summary>
+/// Class representing document
+/// </summary>
 public class Document
 {
     /// <summary>
@@ -24,7 +25,7 @@ public class Document
     }
 
     /// <summary>
-    /// Read file and write to console
+    /// Read file and write content to console
     /// </summary>
     /// <param name="file"></param>
     static void ReadFileToConsole(FileInfo file)

@@ -1,50 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace cleaning_robot;
 
-namespace cleaning_robot;
-
+/// <summary>
+/// Class representing map
+/// </summary>
 public class Map
 {
-    private static Map? instance = null;
+    private static Map? map = null;
 
+    /// <summary>
+    /// Map matrix
+    /// </summary>
+    public static List<List<string>>? Matrix { get; private set; }
 
-    public static List<List<string>>? MapMatrix { get; private set; }
+    /// <summary>
+    /// Number of columns
+    /// </summary>
+    private static int ColumnsCount { get; set; }
 
-    private static int XLength { get; set; }
+    /// <summary>
+    /// Number of rows
+    /// </summary>
+    private static int RowsCount { get; set; }
 
-    private static int YLength { get; set; }
-
+    /// <summary>
+    /// Initialize new instance of <see cref="Map"/> class.
+    /// </summary>
+    /// <param name="map">Map matrix</param>
     public Map(List<List<string>> map)
     {
-        MapMatrix = map;
-        YLength = map.Count;
-        if (YLength > 0)
+        Matrix = map;
+        RowsCount = map.Count;
+        if (RowsCount > 0)
         {
-            XLength = map[0].Count;
+            ColumnsCount = map[0].Count;
         }
         else
         {
-            XLength = 0;
+            ColumnsCount = 0;
         }
     }
 
     //Lock Object
     private static object lockThis = new object();
-    public static Map GetMap(List<List<string>> map)
+    /// <summary>
+    /// Return instance of <see cref="Map"/> class.
+    /// </summary>
+    /// <param name="matrix"></param>
+    /// <returns>Instance of Map object</returns>
+    public static Map GetMap(List<List<string>> matrix)
     {
         lock (lockThis)
         {
-            if (Map.instance == null)
-                instance = new Map(map);
+            if (Map.map == null)
+                map = new Map(matrix);
         }
-        return instance;
+        return map;
     }
 
     /// <summary>
-    /// Check if X,Y coordinate is part of loaded map
+    /// Check if X,Y coordinate is the part of the loaded map
     /// </summary>
     /// <param name="x">X coordinate</param>
     /// <param name="y">Y coordinate</param>
@@ -60,17 +74,17 @@ public class Map
         else
         {
             // x is out of map
-            if (x > XLength)
+            if (x > ColumnsCount)
             {
-                Console.WriteLine($"Position X:{x} is out of map. Max X value is {XLength}.");
+                Console.WriteLine($"Position X:{x} is out of map. Max X value is {ColumnsCount}.");
                 return false;
             }
             else
             {
                 // y is out of map
-                if (y > YLength)
+                if (y > RowsCount)
                 {
-                    Console.WriteLine($"Position Y:{y}  is out of map. Max Y value is  {y}.");
+                    Console.WriteLine($"Position Y:{y}  is out of map. Max Y value is  {RowsCount}.");
                     return false;
                 }
             }
@@ -79,7 +93,7 @@ public class Map
     }
 
     /// <summary>
-    /// Check if X,Y coordinate accecessible
+    /// Check if X,Y coordinate is accecessible
     /// </summary>
     /// <param name="x">X coordinate</param>
     /// <param name="y">Y coordinate</param>
@@ -91,7 +105,7 @@ public class Map
 
         if (isInMap)
         {
-            string? cellAccessibility = MapMatrix?[y][x]; // y are rows and x are columns
+            string? cellAccessibility = Matrix?[y][x]; // y=row index, x=column index
             // S - can be occupied and cleaned
             // C -  can’t be occupied or cleaned
             // null - empty cell
