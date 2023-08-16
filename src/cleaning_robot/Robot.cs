@@ -58,8 +58,10 @@ public class Robot
         return robot;
     }
 
-    public static void LoadJson(FileInfo file)
+    public static bool LoadJson(FileInfo file)
     {
+        bool isPrepared = true;
+
         Input? input =  JsonConvert.DeserializeObject<Input>(Document.Read(file));
 
         //List<List<string>>? mapX = new List<List<string>>(); // TODO
@@ -71,6 +73,11 @@ public class Robot
             if (input.start != null)
             {
                 robot.Position = new Position(input.start.X, input.start.Y, input.start.facing);
+            }
+            else
+            {
+                isPrepared = false;
+                Console.WriteLine("Starting position is not specified in input file.");
             }
 
             if (input.commands != null)
@@ -84,13 +91,24 @@ public class Robot
 
                 robot.CommandsArray = tmpCmd;
             }
+            else
+            {
+                Console.WriteLine("No commands are specifiend in input file.");
+            }
+
+            bool isCellAccessible = Map.IsCellAccessible(robot.Position.X, robot.Position.Y);
+            if (isCellAccessible)
+            {
+                robot.Visited.Add(new Cell(robot.Position.X, robot.Position.Y));
+            }
+            else
+            {
+                isPrepared = false;
+                Console.WriteLine($"Starting position X:{robot.Position.X},Y:{robot.Position.Y} is not accessible.");
+            }
         }
 
-        bool isCellAccessible = Map.IsCellAccessible(robot.Position.X, robot.Position.Y);
-        if (isCellAccessible)
-        {
-            robot.Visited.Add(new Cell(robot.Position.X, robot.Position.Y));
-        }
+        return isPrepared;
     }
 
     public static void SaveJson(FileInfo file)
@@ -126,8 +144,6 @@ public class Robot
             //if (robot.Battery >= cmd.Cost)
             if (IsBatteryEnough(cmd.Cost) && !robot.IsStucked)
             {
-                Console.WriteLine($"Prepared move {cmd.Name}");
-
                 Move(cmd);      
                 //if (robot.HitObstacleCount >= 5)
                 //{
@@ -152,6 +168,8 @@ public class Robot
 
     private static bool Move(Command command)
     {
+        Console.WriteLine($"Prepared move {command.Name}");
+
         bool isMove = true;
 
         robot.Battery -= command.Cost;
@@ -183,6 +201,7 @@ public class Robot
             else
             {
                 isMove = false;
+                robot.HitObstacleCount += 1;
                 BackOff();
             }
         }
@@ -200,6 +219,7 @@ public class Robot
             else
             {
                 isMove = false;
+                robot.HitObstacleCount += 1;
                 BackOff();
             }
         }
@@ -217,7 +237,7 @@ public class Robot
     {
         Console.WriteLine($"Back off sequence. Hit obstacle count: {robot.HitObstacleCount}.");
 
-        if (robot.HitObstacleCount >= 5)
+        if (robot.HitObstacleCount > 5)
         {
             robot.IsStucked = true;
         }
@@ -247,11 +267,6 @@ public class Robot
                         break;
                     }
                 }
-            }
-
-            if (!isMove)
-            {
-                BackOff();
             }
         }
     }

@@ -20,8 +20,8 @@ class Program
 
         if (args.Length == 2)
         {
-            string inputFileArg = "test2.json";  // TODO: args[0];
-            string outputFileArg = "test2_result.json"; // TODO: args[1];
+            string inputFileArg = "test0.json";  // TODO: args[0];
+            string outputFileArg = "test0_result.json"; // TODO: args[1];
 
             FileInfo inputFile = new FileInfo(inputFileArg);
             FileInfo outputFile = new FileInfo(outputFileArg);
@@ -29,8 +29,10 @@ class Program
             {
                 //Robot robot = 
                 Robot.GetRobot();
-                Robot.LoadJson(inputFile);
-                Robot.Start();
+                if (Robot.LoadJson(inputFile))
+                {
+                    Robot.Start();
+                }
                 //ReadFile(inputFile);
                 //string json = Read(inputFile);
                 //Console.WriteLine(json);

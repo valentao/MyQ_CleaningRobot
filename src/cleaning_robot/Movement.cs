@@ -51,7 +51,7 @@ public class Movement
 
     public static Position Back(Position position)
     {
-        Position newPosition = position;
+        Position newPosition = new Position(position.X, position.Y, position.facing);
 
         if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
         {
@@ -65,11 +65,11 @@ public class Movement
         return newPosition;
     }
 
-    public static readonly string[] backOffCommands0 = new string[] { "TR", "A", "TL" };
-    public static readonly string[] backOffCommands1 = new string[] { "TR", "A", "TR" };
+    public static readonly string[] backOffCommands1 = new string[] { "TR", "A", "TL" };
     public static readonly string[] backOffCommands2 = new string[] { "TR", "A", "TR" };
-    public static readonly string[] backOffCommands3 = new string[] { "TR", "B", "TR", "A" };
-    public static readonly string[] backOffCommands4 = new string[] { "TL", "TL", "A" };
+    public static readonly string[] backOffCommands3 = new string[] { "TR", "A", "TR" };
+    public static readonly string[] backOffCommands4 = new string[] { "TR", "B", "TR", "A" };
+    public static readonly string[] backOffCommands5 = new string[] { "TL", "TL", "A" };
 
     /// <summary>
     /// Back off sequence when robot hits an obstacle
@@ -79,7 +79,7 @@ public class Movement
     /// <exception cref="Exception"></exception>
     public static string[] BackOffStrategy(int hitObstacleCount)
     {
-        Console.WriteLine($"Back off sequence. Hit obstacle count: {hitObstacleCount}.");
+        //Console.WriteLine($"Back off sequence. Hit obstacle count: {hitObstacleCount}.");
 
         string[] backOffCommands;
         //bool backOff = true;
@@ -102,11 +102,11 @@ public class Movement
 
         backOffCommands = hitObstacleCount switch
         {
-            0 => backOffCommands0,
             1 => backOffCommands1,
             2 => backOffCommands2,
             3 => backOffCommands3,
             4 => backOffCommands4,
+            5 => backOffCommands5,
             _ => throw new Exception($"Unknown back off sequence")
         };
 
