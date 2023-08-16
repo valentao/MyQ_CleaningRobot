@@ -98,28 +98,25 @@ public class Robot
         Output output = new Output();
         output.battery = robot.Battery;
         output.final = robot.Position;
-
-        // TODO - select distinct from 
-        //Cell[] d = robot.Visited.ToArray();
-        //Cell[] distinct = d.SelectMany(a => a).Distinct().ToArray();
-        //var distinct = array.SelectMany(a => a).Distinct().ToArray();
-
-        // TODO - sort Array by X
-        //Cell[] x = robot.Visited.ToArray();
-        //var sorted = x.OrderBy(y => y[0]).ThenBy(y => y[1]).ThenBy(y => y[2]);
-
-        output.visited = robot.Visited.ToArray();
-        output.cleaned = robot.Cleaned.ToArray();
-
-        //Cell c1 = new Cell(1,0);
-        //Cell c2 = new Cell(2, 0);
-        //Cell c3 = new Cell(3, 0);
-        //output.visited = new Cell[] { c1, c2, c3 };
-        //output.cleaned = new Cell[] { c1, c2 };
+        output.visited = robot.Visited.Select(visited => new { visited.X, visited.Y }) // select new anonymous type
+            .Distinct() // select distinct elements
+            .OrderBy(x => x.X) // first order by X
+            .ThenBy(y => y.Y) // second order by Y
+            .Select(cell => new Cell(cell.X, cell.Y)) // cast to Cell object
+            .ToArray(); // convert to array
+        output.cleaned = robot.Cleaned.Select(cleaned => new { cleaned.X, cleaned.Y })
+            .Distinct()
+            .OrderBy(x => x.X)
+            .ThenBy(y => y.Y)
+            .Select(cell => new Cell(cell.X, cell.Y))
+            .ToArray();
 
         string outputJson = JsonConvert.SerializeObject(output);
-        FileInfo fileJsonOutput = new FileInfo("test_output.json"); // TODO new FileInfo(args[1])
-        Document.Write(fileJsonOutput, outputJson);
+        if (file.Exists)
+        {
+            Console.WriteLine($"The output file {file} already exists and will be overwritten.");
+        }
+        Document.Write(file, outputJson);
     }
 
     public static void Start()
