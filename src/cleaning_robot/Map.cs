@@ -20,14 +20,14 @@ public class Map
     public Map(List<List<string>> map) 
     {
         MapMatrix = map;
-        XLength = map.Count;
-        if (XLength > 0)
+        YLength = map.Count;
+        if (YLength > 0)
         {
-            YLength = map[0].Count;
+            XLength = map[0].Count;
         }
         else
         {
-            YLength = 0;
+            XLength = 0;
         }
     }
 
@@ -91,7 +91,7 @@ public class Map
 
         if (isInMap)
         {
-            string? cellAccessibility = MapMatrix?[x][y];
+            string? cellAccessibility = MapMatrix?[y][x]; // y are rows and x are collumns
             // S - can be occupied and cleaned
             // C -  can’t be occupied or cleaned
             // null - empty cell
