@@ -13,22 +13,14 @@ public class Robot
         W
     }
 
-   public static readonly Facing[] facingArray = new[] {
+    public static readonly Facing[] facingArray = new[] {
     Facing.N,
     Facing.E,
     Facing.S,
     Facing.W
     };
 
-    private static Robot? robot = null;
-
-    private Robot()
-    {
-        Visited = new List<Cell>();
-        Cleaned = new List<Cell>();
-        HitObstacleCount = 0;
-        IsStucked = false;
-    }
+    #region Properties
 
     public int Battery { get; set; }
 
@@ -46,6 +38,17 @@ public class Robot
 
     public bool IsStucked { get; set; }
 
+    #endregion
+
+    private static Robot? robot = null;
+
+    private Robot()
+    {
+        Visited = new List<Cell>();
+        Cleaned = new List<Cell>();
+        HitObstacleCount = 0;
+        IsStucked = false;
+    }
     //Lock Object
     private static object lockThis = new object();
     public static Robot GetRobot()
@@ -62,9 +65,7 @@ public class Robot
     {
         bool isPrepared = true;
 
-        Input? input =  JsonConvert.DeserializeObject<Input>(Document.Read(file));
-
-        //List<List<string>>? mapX = new List<List<string>>(); // TODO
+        Input? input = JsonConvert.DeserializeObject<Input>(Document.Read(file));
 
         if (input != null && robot != null)
         {
@@ -141,14 +142,9 @@ public class Robot
     {
         foreach (Command cmd in robot.CommandsArray)
         {
-            //if (robot.Battery >= cmd.Cost)
             if (IsBatteryEnough(cmd.Cost) && !robot.IsStucked)
             {
-                Move(cmd);      
-                //if (robot.HitObstacleCount >= 5)
-                //{
-                //    robot.IsStucked = 
-                //}
+                Move(cmd);
             }
             else
             {
@@ -160,7 +156,6 @@ public class Robot
                 {
                     Console.WriteLine($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.");
                 }
-                    //Document.WriteToJson(robot, new FileInfo(args[1]));
                 break;
             }
         }
@@ -182,15 +177,7 @@ public class Robot
 
         if (command == Command.Advance)
         {
-            //Position p = new Position(0,0,Facing.N);
-            //Console.WriteLine($"TestP1 X:{p.X},Y:{p.Y}");
-            //p = robot.Position;
-            //Console.WriteLine($"TestP2 X:{p.X},Y:{p.Y}");
-
-            //Console.WriteLine($"Test1 X:{robot.Position.X},Y:{robot.Position.Y}");
             Position position = Advance(robot.Position);
-            //Console.WriteLine($"Test2 X:{robot.Position.X},Y:{robot.Position.Y}");
-            //Console.WriteLine($"TestP3 X:{p.X},Y:{p.Y}");
 
             if (Map.IsCellAccessible(position.X, position.Y))
             {

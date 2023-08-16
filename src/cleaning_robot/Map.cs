@@ -17,7 +17,7 @@ public class Map
 
     private static int YLength { get; set; }
 
-    public Map(List<List<string>> map) 
+    public Map(List<List<string>> map)
     {
         MapMatrix = map;
         YLength = map.Count;
@@ -55,7 +55,7 @@ public class Map
         if (x < 0 || y < 0)
         {
             Console.WriteLine($"Position X:{x}, Y:{y} is out of map. None of the coordinates can be negative.");
-            return false; 
+            return false;
         }
         else
         {
@@ -91,7 +91,7 @@ public class Map
 
         if (isInMap)
         {
-            string? cellAccessibility = MapMatrix?[y][x]; // y are rows and x are collumns
+            string? cellAccessibility = MapMatrix?[y][x]; // y are rows and x are columns
             // S - can be occupied and cleaned
             // C -  can’t be occupied or cleaned
             // null - empty cell

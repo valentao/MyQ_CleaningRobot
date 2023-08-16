@@ -32,16 +32,4 @@ public class Document
         File.ReadLines(file.FullName).ToList()
             .ForEach(line => Console.WriteLine(line));
     }
-
-    //static void WriteFile(FileInfo file, FileInfo inputFile)
-    //{
-    //    List<string> lines = new List<string>();
-
-    //    File.ReadLines(inputFile.FullName).ToList()
-    //        .ForEach(line => lines.Add(line));
-
-    //    string[] linesArray = lines.ToArray();
-
-    //    File.WriteAllLines(file.FullName, linesArray);
-    //}
 }

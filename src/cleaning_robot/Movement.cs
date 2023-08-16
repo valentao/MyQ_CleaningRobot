@@ -79,26 +79,7 @@ public class Movement
     /// <exception cref="Exception"></exception>
     public static string[] BackOffStrategy(int hitObstacleCount)
     {
-        //Console.WriteLine($"Back off sequence. Hit obstacle count: {hitObstacleCount}.");
-
         string[] backOffCommands;
-        //bool backOff = true;
-
-        // all attempts failed
-        //if (hitObstacleCount == 5)
-        //{
-        //    backOff = false;
-        //    Console.WriteLine($"End of program.");
-        //    return backOff;
-        //}
-        //else
-        //{
-        // back off sequence was successful
-        //if (hitObstacleCount == 2)
-        //{
-        //    Console.WriteLine($"Back off sequence {hitObstacleCount} was successful");
-        //    return true;
-        //}
 
         backOffCommands = hitObstacleCount switch
         {
@@ -110,13 +91,7 @@ public class Movement
             _ => throw new Exception($"Unknown back off sequence")
         };
 
-        //Console.WriteLine($"Back off sequence {hitObstacleCount} commands {string.Join(", ", backOffCommands)}");
-
-        //hitObstacleCount += 1;
-        //return BackOff(hitObstacleCount);
-
         return backOffCommands;
-        //}
     }
 }
 
