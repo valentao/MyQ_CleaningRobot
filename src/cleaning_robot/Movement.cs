@@ -35,11 +35,11 @@ public class Movement
 
     public static Position Advance(Position position)
     {
-        Position newPosition = position;
+        Position newPosition = new Position(position.X, position.Y, position.facing);
 
         if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
         {
-            newPosition.Y += position.facing == Robot.Facing.N ? 1 : -1;
+            newPosition.Y += position.facing == Robot.Facing.N ? -1 : 1;
         }
         if (position.facing == Robot.Facing.E || position.facing == Robot.Facing.W)
         {
@@ -55,7 +55,7 @@ public class Movement
 
         if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
         {
-            newPosition.Y += position.facing == Robot.Facing.N ? -1 : 1;
+            newPosition.Y += position.facing == Robot.Facing.N ? 1 : -1;
         }
         if (position.facing == Robot.Facing.E || position.facing == Robot.Facing.W)
         {

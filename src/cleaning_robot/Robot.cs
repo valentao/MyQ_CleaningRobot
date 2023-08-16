@@ -162,12 +162,20 @@ public class Robot
         if ((command == Command.TurnLeft || command == Command.TurnRight) && command.Turn != 0)
         {
             robot.Position.facing = Turn(robot.Position.facing, command.Turn);
-            Console.WriteLine($"{command.Name}");
+            Console.WriteLine($"{command.Name} to {robot.Position.facing}");
         }
 
         if (command == Command.Advance)
         {
+            //Position p = new Position(0,0,Facing.N);
+            //Console.WriteLine($"TestP1 X:{p.X},Y:{p.Y}");
+            //p = robot.Position;
+            //Console.WriteLine($"TestP2 X:{p.X},Y:{p.Y}");
+
+            //Console.WriteLine($"Test1 X:{robot.Position.X},Y:{robot.Position.Y}");
             Position position = Advance(robot.Position);
+            //Console.WriteLine($"Test2 X:{robot.Position.X},Y:{robot.Position.Y}");
+            //Console.WriteLine($"TestP3 X:{p.X},Y:{p.Y}");
 
             if (Map.IsCellAccessible(position.X, position.Y))
             {
