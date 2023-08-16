@@ -42,23 +42,11 @@ class Program
             {
                 Console.WriteLine($"Argument {inputFileArg} is not valid .json file");
             }
-
-            if (outputFile.Exists)
-            {
-                Console.WriteLine($"Output file {outputFileArg} already exists");
-            }
-            //else
-            //{
-            //    WriteFile(outputFile, inputFile);
-            //}
         }
         else
         {
             Console.WriteLine("the application requires exactly 2 arguments");
         }
-
-
-        
         
 //        FileInfo jsonFile = new FileInfo("test0.json"); // TODO args[0]
 
