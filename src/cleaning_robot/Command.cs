@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+﻿namespace cleaning_robot;
 
-namespace cleaning_robot;
-
+/// <summary>
+/// Class representing command
+/// </summary>
 public class Command
 {
     /// <summary>
@@ -18,7 +11,7 @@ public class Command
     public string Name { get; }
 
     /// <summary>
-    /// ShortName
+    /// Short name
     /// </summary>
     public string ShortName { get; }
 
@@ -33,7 +26,7 @@ public class Command
     public string Description { get; }
 
     /// <summary>
-    /// Turn dirrection 1=right, -1=left
+    /// Turn direction 1=right, -1=left
     /// </summary>
     public int Turn { get; }
 
@@ -44,6 +37,14 @@ public class Command
     public static readonly Command Back = new Command("Back", "B", 3, "Instructs the robot to move back one cell without changing direction.", 0);
     public static readonly Command Clean = new Command("Clean", "C", 5, "Instructs the robot to clean the current cell.", 0);
 
+    /// <summary>
+    /// Initialize new instance of <see cref="Command"/> class.
+    /// </summary>
+    /// <param name="name">Name of command</param>
+    /// <param name="shortName">Short name of command</param>
+    /// <param name="cost">Cost of command</param>
+    /// <param name="description">Description of command</param>
+    /// <param name="turn">Direction of command</param>
     protected Command(string name, string shortName, int cost, string description, int turn)
     {
         Name = name;
@@ -53,9 +54,16 @@ public class Command
         Turn = turn;
     }
 
-    // 
+    /// <summary>
+    /// Initialize field of aviable commands
+    /// </summary>
     private static Command[] commands = new Command[] { TurnLeft, TurnRight, Advance, Back, Clean };
 
+    /// <summary>
+    /// Return cost of command
+    /// </summary>
+    /// <param name="shortName">Short name of command</param>
+    /// <returns>Cost of command</returns>
     public int GetCommandCost(string shortName)
     {
         var cost = commands.Where(cmd => cmd.ShortName == shortName)
@@ -65,6 +73,11 @@ public class Command
         return cost;
     }
 
+    /// <summary>
+    /// Get command by short name
+    /// </summary>
+    /// <param name="shortName">Short name of command</param>
+    /// <returns>Command</returns>
     public static Command? GetCommand(string shortName)
     {
         var cmd = commands.Where(cmd => cmd.ShortName == shortName)

@@ -3,6 +3,9 @@ using static cleaning_robot.Movement;
 
 namespace cleaning_robot;
 
+/// <summary>
+/// Class representing robot
+/// </summary>
 public class Robot
 {
     public enum Facing
@@ -22,26 +25,56 @@ public class Robot
 
     #region Properties
 
+    /// <summary>
+    /// Actual battery level
+    /// </summary>
     public int Battery { get; set; }
 
+    /// <summary>
+    /// Current <see cref="Postion"/>
+    /// </summary>
     public Position Position { get; set; }
 
+    /// <summary>
+    /// Array of commands (<see cref="Command"/>) to perform
+    /// </summary>
     public Command[] CommandsArray { get; set; }
 
+    /// <summary>
+    /// <see cref="Map"/> 
+    /// </summary>
     public Map Map { get; set; }
 
+    /// <summary>
+    /// List of visited cells (<see cref="Cell"/>)
+    /// </summary>
     public List<Cell> Visited { get; set; }
 
+    /// <summary>
+    /// List of cleaned cells (<see cref="Cell"/>)
+    /// </summary>
     public List<Cell> Cleaned { get; set; }
-
+    
+    /// <summary>
+    /// Hit obstacles counter
+    /// </summary>
     public int HitObstacleCount { get; set; }
 
+    /// <summary>
+    /// Auxiliary flag that the robot cannot move
+    /// </summary>
     public bool IsStucked { get; set; }
 
     #endregion
 
+    /// <summary>
+    /// Robot instance
+    /// </summary>
     private static Robot? robot = null;
 
+    /// <summary>
+    /// Initialize new instance of <see cref="Robot"/> class.
+    /// </summary>
     private Robot()
     {
         Visited = new List<Cell>();
@@ -51,6 +84,11 @@ public class Robot
     }
     //Lock Object
     private static object lockThis = new object();
+    
+    /// <summary>
+    /// Return instance of <see cref="Robot"/> class 
+    /// </summary>
+    /// <returns>Instance of Robot object</returns>
     public static Robot GetRobot()
     {
         lock (lockThis)
@@ -61,6 +99,11 @@ public class Robot
         return robot;
     }
 
+    /// <summary>
+    /// Load input json file into robot instance
+    /// </summary>
+    /// <param name="file">input json file</param>
+    /// <returns>no input data is missing</returns>
     public static bool LoadJson(FileInfo file)
     {
         bool isPrepared = true;
@@ -73,7 +116,7 @@ public class Robot
             robot.Battery = input.battery;
             if (input.start != null)
             {
-                robot.Position = new Position(input.start.X, input.start.Y, input.start.facing);
+                robot.Position = new Position(input.start.X, input.start.Y, input.start.Facing);
             }
             else
             {
@@ -112,6 +155,10 @@ public class Robot
         return isPrepared;
     }
 
+    /// <summary>
+    /// Save result of robot's work to file
+    /// </summary>
+    /// <param name="file">output file</param>
     public static void SaveJson(FileInfo file)
     {
         Output output = new Output();
@@ -138,6 +185,9 @@ public class Robot
         Document.Write(file, outputJson);
     }
 
+    /// <summary>
+    /// Proccessing loaded commands
+    /// </summary>
     public static void Start()
     {
         foreach (Command cmd in robot.CommandsArray)
@@ -161,6 +211,11 @@ public class Robot
         }
     }
 
+    /// <summary>
+    /// Evaluation and execution of one movement
+    /// </summary>
+    /// <param name="command">Actual movement <see cref="Command"/></param>
+    /// <returns>movement was successful</returns>
     private static bool Move(Command command)
     {
         Console.WriteLine($"Prepared move {command.Name}");
@@ -171,8 +226,8 @@ public class Robot
 
         if ((command == Command.TurnLeft || command == Command.TurnRight) && command.Turn != 0)
         {
-            robot.Position.facing = Turn(robot.Position.facing, command.Turn);
-            Console.WriteLine($"{command.Name} to {robot.Position.facing}");
+            robot.Position.Facing = Turn(robot.Position.Facing, command.Turn);
+            Console.WriteLine($"{command.Name} to {robot.Position.Facing}");
         }
 
         if (command == Command.Advance)
@@ -220,6 +275,9 @@ public class Robot
         return isMove;
     }
 
+    /// <summary>
+    /// Loading and executing a single back off sequence
+    /// </summary>
     private static void BackOff()
     {
         Console.WriteLine($"Back off sequence. Hit obstacle count: {robot.HitObstacleCount}.");
@@ -258,6 +316,11 @@ public class Robot
         }
     }
 
+    /// <summary>
+    /// Check if robot has enough battery level for next move
+    /// </summary>
+    /// <param name="cost">Next move battery cost</param>
+    /// <returns>robot has enough battery level for next move</returns>
     public static bool IsBatteryEnough(int cost)
     {
         return robot?.Battery >= cost;

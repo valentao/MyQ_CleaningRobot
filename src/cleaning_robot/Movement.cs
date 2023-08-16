@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace cleaning_robot;
 
-namespace cleaning_robot;
-
+/// <summary>
+/// Class representing posible movements of the robot
+/// </summary>
 public class Movement
 {
     /// <summary>
@@ -33,38 +30,51 @@ public class Movement
         return facingArray[turnedFacing];
     }
 
+    /// <summary>
+    /// Advance one cell forward
+    /// </summary>
+    /// <param name="position">Current position</param>
+    /// <returns>Target position for advance movement</returns>
     public static Position Advance(Position position)
     {
-        Position newPosition = new Position(position.X, position.Y, position.facing);
+        Position newPosition = new Position(position.X, position.Y, position.Facing);
 
-        if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
+        if (position.Facing == Robot.Facing.N || position.Facing == Robot.Facing.S)
         {
-            newPosition.Y += position.facing == Robot.Facing.N ? -1 : 1;
+            newPosition.Y += position.Facing == Robot.Facing.N ? -1 : 1;
         }
-        if (position.facing == Robot.Facing.E || position.facing == Robot.Facing.W)
+        if (position.Facing == Robot.Facing.E || position.Facing == Robot.Facing.W)
         {
-            newPosition.X += position.facing == Robot.Facing.E ? 1 : -1;
+            newPosition.X += position.Facing == Robot.Facing.E ? 1 : -1;
         }
 
         return newPosition;
     }
 
+    /// <summary>
+    /// Move back one cell
+    /// </summary>
+    /// <param name="position">Current position</param>
+    /// <returns>Target position for backward movement</returns>
     public static Position Back(Position position)
     {
-        Position newPosition = new Position(position.X, position.Y, position.facing);
+        Position newPosition = new Position(position.X, position.Y, position.Facing);
 
-        if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
+        if (position.Facing == Robot.Facing.N || position.Facing == Robot.Facing.S)
         {
-            newPosition.Y += position.facing == Robot.Facing.N ? 1 : -1;
+            newPosition.Y += position.Facing == Robot.Facing.N ? 1 : -1;
         }
-        if (position.facing == Robot.Facing.E || position.facing == Robot.Facing.W)
+        if (position.Facing == Robot.Facing.E || position.Facing == Robot.Facing.W)
         {
-            newPosition.X += position.facing == Robot.Facing.E ? -1 : 1;
+            newPosition.X += position.Facing == Robot.Facing.E ? -1 : 1;
         }
 
         return newPosition;
     }
 
+    /// <summary>
+    /// Arrays of back off strategies commands
+    /// </summary>
     public static readonly string[] backOffCommands1 = new string[] { "TR", "A", "TL" };
     public static readonly string[] backOffCommands2 = new string[] { "TR", "A", "TR" };
     public static readonly string[] backOffCommands3 = new string[] { "TR", "A", "TR" };
@@ -72,11 +82,11 @@ public class Movement
     public static readonly string[] backOffCommands5 = new string[] { "TL", "TL", "A" };
 
     /// <summary>
-    /// Back off sequence when robot hits an obstacle
+    /// Back off strategy when robot hits an obstacle
     /// </summary>
     /// <param name="hitObstacleCount">Number of attempts to back off</param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <returns>Array of current back off strategy commands</returns>
+    /// <exception cref="Exception">Thrown when unknow back off strategy index</exception>
     public static string[] BackOffStrategy(int hitObstacleCount)
     {
         string[] backOffCommands;
@@ -88,7 +98,7 @@ public class Movement
             3 => backOffCommands3,
             4 => backOffCommands4,
             5 => backOffCommands5,
-            _ => throw new Exception($"Unknown back off sequence")
+            _ => throw new Exception($"Unknown back off strategy")
         };
 
         return backOffCommands;
