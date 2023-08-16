@@ -40,8 +40,8 @@ public class Command
     // Create available commands
     public static readonly Command TurnLeft = new Command("Turn Left", "TL", 1, "Instructs the robot to turn 90 degrees to the left.", -1);
     public static readonly Command TurnRight = new Command("Turn Right", "TR", 1, "Instructs the robot to turn 90 degrees to the right.", 1);
-    public static readonly Command Advance = new Command("Advance", "A", 2, "Instructs the robot to advance one cell forward into the next cell.",0);
-    public static readonly Command Back = new Command("Back", "B", 3, "Instructs the robot to move back one cell without changing direction.",0);
+    public static readonly Command Advance = new Command("Advance", "A", 2, "Instructs the robot to advance one cell forward into the next cell.", 0);
+    public static readonly Command Back = new Command("Back", "B", 3, "Instructs the robot to move back one cell without changing direction.", 0);
     public static readonly Command Clean = new Command("Clean", "C", 5, "Instructs the robot to clean the current cell.", 0);
 
     protected Command(string name, string shortName, int cost, string description, int turn)
@@ -51,11 +51,6 @@ public class Command
         Cost = cost;
         Description = description;
         Turn = turn;
-    }
-
-    public Command()
-    {
-        
     }
 
     // 
@@ -76,7 +71,5 @@ public class Command
         .FirstOrDefault();
 
         return cmd;
-
-        //return x.Length>0 ? x[0] : null;
     }
 }
