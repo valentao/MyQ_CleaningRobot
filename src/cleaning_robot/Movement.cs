@@ -39,11 +39,11 @@ public class Movement
 
         if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
         {
-            newPosition.X = position.facing == Robot.Facing.N ? 1 : -1;
+            newPosition.Y += position.facing == Robot.Facing.N ? 1 : -1;
         }
         if (position.facing == Robot.Facing.E || position.facing == Robot.Facing.W)
         {
-            newPosition.Y = position.facing == Robot.Facing.E ? 1 : -1;
+            newPosition.X += position.facing == Robot.Facing.E ? 1 : -1;
         }
 
         return newPosition;
@@ -55,11 +55,11 @@ public class Movement
 
         if (position.facing == Robot.Facing.N || position.facing == Robot.Facing.S)
         {
-            newPosition.X = position.facing == Robot.Facing.N ? -1 : 1;
+            newPosition.Y += position.facing == Robot.Facing.N ? -1 : 1;
         }
         if (position.facing == Robot.Facing.E || position.facing == Robot.Facing.W)
         {
-            newPosition.Y = position.facing == Robot.Facing.E ? -1 : 1;
+            newPosition.X += position.facing == Robot.Facing.E ? -1 : 1;
         }
 
         return newPosition;
@@ -77,44 +77,46 @@ public class Movement
     /// <param name="hitObstacleCount">Number of attempts to back off</param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static bool BackOff(int hitObstacleCount)
+    public static string[] BackOffStrategy(int hitObstacleCount)
     {
-        Console.WriteLine($"Hit obstacle count: {hitObstacleCount}");
+        Console.WriteLine($"Back off sequence. Hit obstacle count: {hitObstacleCount}.");
 
         string[] backOffCommands;
-        bool backOff = true;
+        //bool backOff = true;
 
         // all attempts failed
-        if (hitObstacleCount == 5)
+        //if (hitObstacleCount == 5)
+        //{
+        //    backOff = false;
+        //    Console.WriteLine($"End of program.");
+        //    return backOff;
+        //}
+        //else
+        //{
+        // back off sequence was successful
+        //if (hitObstacleCount == 2)
+        //{
+        //    Console.WriteLine($"Back off sequence {hitObstacleCount} was successful");
+        //    return true;
+        //}
+
+        backOffCommands = hitObstacleCount switch
         {
-            backOff = false;
-            Console.WriteLine($"End of program.");
-            return backOff;
-        }
-        else
-        {
-            // back off sequence was successful
-            if (hitObstacleCount == 2)
-            {
-                Console.WriteLine($"Back off sequence {hitObstacleCount} was successful");
-                return true;
-            }
+            0 => backOffCommands0,
+            1 => backOffCommands1,
+            2 => backOffCommands2,
+            3 => backOffCommands3,
+            4 => backOffCommands4,
+            _ => throw new Exception($"Unknown back off sequence")
+        };
 
-            backOffCommands = hitObstacleCount switch
-            {
-                0 => backOffCommands0,
-                1 => backOffCommands1,
-                2 => backOffCommands2,
-                3 => backOffCommands3,
-                4 => backOffCommands4,
-                _ => throw new Exception($"Unknown back off sequence")
-            };
+        //Console.WriteLine($"Back off sequence {hitObstacleCount} commands {string.Join(", ", backOffCommands)}");
 
-            Console.WriteLine($"Back off sequence {hitObstacleCount} commands {string.Join(", ", backOffCommands)}");
+        //hitObstacleCount += 1;
+        //return BackOff(hitObstacleCount);
 
-            hitObstacleCount += 1;
-            return BackOff(hitObstacleCount);
-        }
+        return backOffCommands;
+        //}
     }
 }
 
