@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace cleaning_robot;
+﻿namespace cleaning_robot;
 
 /// <summary>
 /// Class representing document
@@ -12,22 +10,21 @@ public class Document
     /// </summary>
     /// <param name="file">file</param>
     /// <returns>string content</returns>
-    public static string Read(FileInfo file)
+    public static string ReadAllText(FileInfo file)
     {
-        Log.Write($"Reading content from input file {file}", Log.LogSeverity.Info);
         return File.ReadAllText(file.FullName);
     }
+
     /// <summary>
     /// Write text to file
     /// </summary>
     /// <param name="file">file to write</param>
     /// <param name="text">text to write</param>
-    public static void Write(FileInfo file, string text)
+    public static void WriteAllText(FileInfo file, string text)
     {
-        Log.Write($"Writting content to ouput file {file}", Log.LogSeverity.Info);
         File.WriteAllText(file.FullName, text);
     }
-    
+
     /// <summary>
     /// Append text to file
     /// </summary>
@@ -35,7 +32,7 @@ public class Document
     /// <param name="text">text to write</param>
     public static void AppendText(FileInfo file, string text)
     {
-        if(file.Exists)
+        if (file.Exists)
         {
             using (StreamWriter sw = File.AppendText(file.FullName))
             {
@@ -44,7 +41,7 @@ public class Document
         }
         else
         {
-            using (StreamWriter sw = File.CreateText(file.FullName)) 
+            using (StreamWriter sw = File.CreateText(file.FullName))
             {
                 sw.WriteLine(text);
             }

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using static cleaning_robot.Movement;
+using static cleaning_robot.Command;
 
 namespace cleaning_robot;
 
@@ -8,62 +8,47 @@ namespace cleaning_robot;
 /// </summary>
 public class Robot
 {
-    public enum Facing
-    {
-        N,
-        E,
-        S,
-        W
-    }
-
-    public static readonly Facing[] facingArray = new[] {
-    Facing.N,
-    Facing.E,
-    Facing.S,
-    Facing.W
-    };
-
     #region Properties
 
     /// <summary>
     /// Actual battery level
     /// </summary>
-    public int Battery { get; set; }
+    private int Battery { get; set; }
 
     /// <summary>
     /// Current <see cref="Postion"/>
     /// </summary>
-    public Position Position { get; set; }
+    private Position Position { get; set; }
 
     /// <summary>
     /// Array of commands (<see cref="Command"/>) to perform
     /// </summary>
-    public Command[] CommandsArray { get; set; }
+    private Command[] CommandsArray { get; set; }
 
     /// <summary>
     /// <see cref="Map"/> 
     /// </summary>
-    public Map Map { get; set; }
+    private Map Map { get; set; }
 
     /// <summary>
     /// List of visited cells (<see cref="Cell"/>)
     /// </summary>
-    public List<Cell> Visited { get; set; }
+    private List<Cell> Visited { get; set; }
 
     /// <summary>
     /// List of cleaned cells (<see cref="Cell"/>)
     /// </summary>
-    public List<Cell> Cleaned { get; set; }
-    
+    private List<Cell> Cleaned { get; set; }
+
     /// <summary>
     /// Hit obstacles counter
     /// </summary>
-    public int HitObstacleCount { get; set; }
+    private int HitObstacleCount { get; set; }
 
     /// <summary>
     /// Auxiliary flag that the robot cannot move
     /// </summary>
-    public bool IsStucked { get; set; }
+    private bool IsStucked { get; set; }
 
     #endregion
 
@@ -84,7 +69,7 @@ public class Robot
     }
     //Lock Object
     private static object lockThis = new object();
-    
+
     /// <summary>
     /// Return instance of <see cref="Robot"/> class 
     /// </summary>
@@ -108,7 +93,8 @@ public class Robot
     {
         bool isPrepared = true;
 
-        Input? input = JsonConvert.DeserializeObject<Input>(Document.Read(file));
+        Log.Write($"Reading content from input file {file}", Log.LogSeverity.Info);
+        Input? input = JsonConvert.DeserializeObject<Input>(Document.ReadAllText(file));
 
         if (input != null && robot != null)
         {
@@ -168,6 +154,7 @@ public class Robot
     public static void SaveJson(FileInfo file)
     {
         Log.Write("Output generation started.", Log.LogSeverity.Info);
+
         Output output = new Output();
         output.battery = robot.Battery;
         output.final = robot.Position;
@@ -189,7 +176,8 @@ public class Robot
         {
             Log.Write($"The output file {file} already exists and will be overwritten.", Log.LogSeverity.Warning);
         }
-        Document.Write(file, outputJson);
+        Log.Write($"Writting content to ouput file {file}", Log.LogSeverity.Info);
+        Document.WriteAllText(file, outputJson);
     }
 
     /// <summary>
@@ -221,28 +209,28 @@ public class Robot
     }
 
     /// <summary>
-    /// Evaluation and execution of one movement
+    /// Evaluation and execution of one movements
     /// </summary>
     /// <param name="command">Actual movement <see cref="Command"/></param>
     /// <returns>movement was successful</returns>
     private static bool Move(Command command)
     {
-        Log.Write($"Preparation to move {command.Name}", Log.LogSeverity.Info);
+        Log.Write($"Preparation to command {command.Name}", Log.LogSeverity.Info);
 
         bool isMove = true;
 
         robot.Battery -= command.Cost;
         LogBatteryLevel(robot.Battery);
 
-        if ((command == Command.TurnLeft || command == Command.TurnRight) && command.Turn != 0)
+        if ((command == Command.TurnLeft || command == Command.TurnRight) && command.TurnDirection != 0)
         {
-            robot.Position.Facing = Turn(robot.Position.Facing, command.Turn);
+            robot.Position.Facing = MoveTurn(robot.Position.Facing, command.TurnDirection);
             Log.Write($"{command.Name} to {robot.Position.Facing}", Log.LogSeverity.Info);
         }
 
         if (command == Command.Advance)
         {
-            Position position = Advance(robot.Position);
+            Position position = MoveAdvance(robot.Position);
 
             if (Map.IsCellAccessible(position.X, position.Y))
             {
@@ -260,7 +248,7 @@ public class Robot
 
         if (command == Command.Back)
         {
-            Position position = Back(robot.Position);
+            Position position = MoveBack(robot.Position);
 
             if (Map.IsCellAccessible(position.X, position.Y))
             {
@@ -331,7 +319,7 @@ public class Robot
     /// </summary>
     /// <param name="cost">Next move battery cost</param>
     /// <returns>robot has enough battery level for next move</returns>
-    public static bool IsBatteryEnough(int cost)
+    private static bool IsBatteryEnough(int cost)
     {
         return robot?.Battery >= cost;
     }
@@ -340,7 +328,7 @@ public class Robot
     /// Write down current battery level
     /// </summary>
     /// <param name="batteryLevel">robot battery level</param>
-    public static void LogBatteryLevel(int batteryLevel)
+    private static void LogBatteryLevel(int batteryLevel)
     {
         Log.Write($"Battery level: {batteryLevel}", Log.LogSeverity.Info);
     }
