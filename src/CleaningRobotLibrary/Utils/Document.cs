@@ -1,4 +1,4 @@
-﻿namespace cleaning_robot;
+﻿namespace CleaningRobotLibrary.Utils;
 
 /// <summary>
 /// Class representing document

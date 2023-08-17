@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Text.Json.Serialization;
 
-namespace cleaning_robot;
+namespace CleaningRobotLibrary.Logic;
 
 /// <summary>
 /// Class representing robot possition. Class adds Facing parameter to <see cref="Cell"/> class. 
@@ -46,6 +45,6 @@ public class Position : Cell
     /// <summary>
     /// Facing direction
     /// </summary>
-    [JsonProperty(Order = 3), JsonConverter(typeof(StringEnumConverter))]
+    [JsonPropertyNameAttribute("facing"), JsonPropertyOrderAttribute(3), JsonConverter(typeof(JsonStringEnumConverter))]
     public FacingDirection Facing { get; set; }
 }

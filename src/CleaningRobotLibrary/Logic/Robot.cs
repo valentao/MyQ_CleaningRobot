@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using static cleaning_robot.Command;
+﻿using System.Text.Json;
+using CleaningRobotLibrary.Models;
+using CleaningRobotLibrary.Utils;
 
-namespace cleaning_robot;
+namespace CleaningRobotLibrary.Logic;
 
 /// <summary>
 /// Class representing robot
@@ -94,16 +95,16 @@ public class Robot
         bool isPrepared = true;
 
         Log.Write($"Reading content from input file {file}", Log.LogSeverity.Info);
-        Input? input = JsonConvert.DeserializeObject<Input>(Document.ReadAllText(file));
+        Input? input = JsonSerializer.Deserialize<Input>(Document.ReadAllText(file));
 
         if (input != null && robot != null)
         {
-            robot.Map = Map.GetMap(input.map);
-            robot.Battery = input.battery;
+            robot.Map = Map.GetMap(input.Map);
+            robot.Battery = input.Battery;
             LogBatteryLevel(robot.Battery);
-            if (input.start != null)
+            if (input.Start != null)
             {
-                robot.Position = new Position(input.start.X, input.start.Y, input.start.Facing);
+                robot.Position = new Position(input.Start.X, input.Start.Y, input.Start.Facing);
             }
             else
             {
@@ -111,13 +112,13 @@ public class Robot
                 Log.Write("Starting position is not specified in input file.", Log.LogSeverity.Error);
             }
 
-            if (input.commands != null)
+            if (input.Commands != null)
             {
-                Command[]? tmpCmd = new Command[input.commands.Length];
+                Command[]? tmpCmd = new Command[input.Commands.Length];
 
-                for (int i = 0; i < input.commands.Length; i++)
+                for (int i = 0; i < input.Commands.Length; i++)
                 {
-                    tmpCmd[i] = Command.GetCommand(input.commands[i]);
+                    tmpCmd[i] = Command.GetCommand(input.Commands[i]);
                 }
 
                 robot.CommandsArray = tmpCmd;
@@ -156,22 +157,23 @@ public class Robot
         Log.Write("Output generation started.", Log.LogSeverity.Info);
 
         Output output = new Output();
-        output.battery = robot.Battery;
-        output.final = robot.Position;
-        output.visited = robot.Visited.Select(visited => new { visited.X, visited.Y }) // select new anonymous type
+        output.Battery = robot.Battery;
+        output.Final = robot.Position;
+        output.Visited = robot.Visited.Select(visited => new { visited.X, visited.Y }) // select new anonymous type
             .Distinct() // select distinct elements
             .OrderBy(x => x.X) // first order by X
             .ThenBy(y => y.Y) // second order by Y
             .Select(cell => new Cell(cell.X, cell.Y)) // cast to Cell object
             .ToArray(); // convert to array
-        output.cleaned = robot.Cleaned.Select(cleaned => new { cleaned.X, cleaned.Y })
+        output.Cleaned = robot.Cleaned.Select(cleaned => new { cleaned.X, cleaned.Y })
             .Distinct()
             .OrderBy(x => x.X)
             .ThenBy(y => y.Y)
             .Select(cell => new Cell(cell.X, cell.Y))
             .ToArray();
 
-        string outputJson = JsonConvert.SerializeObject(output);
+        string outputJson = JsonSerializer.Serialize<Output>(output);
+
         if (file.Exists)
         {
             Log.Write($"The output file {file} already exists and will be overwritten.", Log.LogSeverity.Warning);
@@ -224,13 +226,13 @@ public class Robot
 
         if ((command == Command.TurnLeft || command == Command.TurnRight) && command.TurnDirection != 0)
         {
-            robot.Position.Facing = MoveTurn(robot.Position.Facing, command.TurnDirection);
+            robot.Position.Facing = Command.MoveTurn(robot.Position.Facing, command.TurnDirection);
             Log.Write($"{command.Name} to {robot.Position.Facing}", Log.LogSeverity.Info);
         }
 
         if (command == Command.Advance)
         {
-            Position position = MoveAdvance(robot.Position);
+            Position position = Command.MoveAdvance(robot.Position);
 
             if (Map.IsCellAccessible(position.X, position.Y))
             {
@@ -248,7 +250,7 @@ public class Robot
 
         if (command == Command.Back)
         {
-            Position position = MoveBack(robot.Position);
+            Position position = Command.MoveBack(robot.Position);
 
             if (Map.IsCellAccessible(position.X, position.Y))
             {
@@ -286,7 +288,7 @@ public class Robot
         }
         else
         {
-            string[] backOffCommands = BackOffStrategy(robot.HitObstacleCount);
+            string[] backOffCommands = Command.BackOffStrategy(robot.HitObstacleCount);
 
             Command[]? tmpCmd = new Command[backOffCommands.Length];
 
