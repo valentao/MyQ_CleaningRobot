@@ -12,7 +12,7 @@ public class Document
 
     public static bool IsJson(FileInfo file)
     {
-        return file.Exists && file.Extension == ".json";
+        return file.Extension == ".json";
     }
 
     /// <summary>
