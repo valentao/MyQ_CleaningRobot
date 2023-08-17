@@ -1,4 +1,7 @@
-﻿namespace cleaning_robot;
+﻿using CleaningRobotLibrary.Logic;
+using CleaningRobotLibrary.Utils;
+
+namespace cleaning_robot;
 class Program
 {
     public static void Main(string[] args)

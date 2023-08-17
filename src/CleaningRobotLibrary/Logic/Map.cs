@@ -1,4 +1,6 @@
-﻿namespace cleaning_robot;
+﻿using CleaningRobotLibrary.Utils;
+
+namespace CleaningRobotLibrary.Logic;
 
 /// <summary>
 /// Class representing map

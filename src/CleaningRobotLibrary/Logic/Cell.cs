@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
-namespace cleaning_robot;
+namespace CleaningRobotLibrary.Logic;
 
 /// <summary>
 /// Class representing a cell on map with X,Y coordinates
@@ -10,13 +10,13 @@ public class Cell
     /// <summary>
     /// X (column) coordinate
     /// </summary>
-    [JsonProperty(Order = 1)]
+    [JsonPropertyOrderAttribute(1)]
     public int X { get; set; }
 
     /// <summary>
     /// Y (row) coordinate
     /// </summary>
-    [JsonProperty(Order = 1)]
+    [JsonPropertyOrderAttribute(2)]
     public int Y { get; set; }
 
     /// <summary>

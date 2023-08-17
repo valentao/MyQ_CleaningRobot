@@ -1,6 +1,6 @@
-﻿using static cleaning_robot.Position;
+﻿using static CleaningRobotLibrary.Logic.Position;
 
-namespace cleaning_robot;
+namespace CleaningRobotLibrary.Logic;
 
 /// <summary>
 /// Class representing command
