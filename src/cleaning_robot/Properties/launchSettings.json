@@ -2,7 +2,7 @@
   "profiles": {
     "cleaning_robot": {
       "commandName": "Project",
-      "commandLineArgs": "test1.json test1_result.json"
+      "commandLineArgs": "test2.json test2_result.json"
     }
   }
 }
