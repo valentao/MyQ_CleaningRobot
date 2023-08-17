@@ -69,7 +69,7 @@ public class Map
     /// <param name="x">X coordinate</param>
     /// <param name="y">Y coordinate</param>
     /// <returns>X,Y coordinate is part of map</returns>
-    private static bool IsInMap(int x, int y)
+    public static bool IsInMap(int x, int y)
     {
         // one of coordinates is negative
         if (x < 0 || y < 0)
