@@ -9,12 +9,34 @@ namespace cleaning_robot;
 public class Position : Cell
 {
     /// <summary>
+    /// Facing direction enum
+    /// </summary>
+    public enum FacingDirection
+    {
+        N,
+        E,
+        S,
+        W
+    }
+
+    /// <summary>
+    /// Array of facing directions
+    /// </summary>
+    public static readonly FacingDirection[] facingArray = new[] {
+    FacingDirection.N,
+    FacingDirection.E,
+    FacingDirection.S,
+    FacingDirection.W
+    };
+
+
+    /// <summary>
     /// Initialize new instance of <see cref="Position"/> class
     /// </summary>
     /// <param name="x">Collumn coordinate</param>
     /// <param name="y">Row coordinate</param>
     /// <param name="facing"><see cref="Facing"/> enum value</param>
-    public Position(int x, int y, Robot.Facing facing) : base(x, y)
+    public Position(int x, int y, FacingDirection facing) : base(x, y)
     {
         base.X = x;
         base.Y = y;
@@ -25,9 +47,5 @@ public class Position : Cell
     /// Facing direction
     /// </summary>
     [JsonProperty(Order = 3), JsonConverter(typeof(StringEnumConverter))]
-    public Robot.Facing Facing { get; set; }
+    public FacingDirection Facing { get; set; }
 }
-
-
-
-

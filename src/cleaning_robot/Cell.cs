@@ -30,7 +30,3 @@ public class Cell
         Y = y;
     }
 }
-
-
-
-

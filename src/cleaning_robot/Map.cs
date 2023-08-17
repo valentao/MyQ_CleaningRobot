@@ -7,10 +7,12 @@ public class Map
 {
     private static Map? map = null;
 
+    #region Properties
+
     /// <summary>
     /// Map matrix
     /// </summary>
-    public static List<List<string>>? Matrix { get; private set; }
+    private static List<List<string>>? Matrix { get; set; }
 
     /// <summary>
     /// Number of columns
@@ -21,6 +23,8 @@ public class Map
     /// Number of rows
     /// </summary>
     private static int RowsCount { get; set; }
+
+    #endregion
 
     /// <summary>
     /// Initialize new instance of <see cref="Map"/> class.
@@ -63,7 +67,7 @@ public class Map
     /// <param name="x">X coordinate</param>
     /// <param name="y">Y coordinate</param>
     /// <returns>X,Y coordinate is part of map</returns>
-    public static bool IsInMap(int x, int y)
+    private static bool IsInMap(int x, int y)
     {
         // one of coordinates is negative
         if (x < 0 || y < 0)

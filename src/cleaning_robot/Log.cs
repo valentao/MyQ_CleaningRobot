@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace cleaning_robot
 {
+    /// <summary>
+    /// Class representing log
+    /// </summary>
     public class Log
     {
         #region Enums
@@ -22,7 +25,10 @@ namespace cleaning_robot
 
         #region Properties
 
-        FileInfo LogFile { get; set; }
+        /// <summary>
+        /// <see cref="Log"/> file
+        /// </summary>
+        FileInfo LogFile { get; }
 
         #endregion
 
@@ -61,13 +67,13 @@ namespace cleaning_robot
         }
 
         /// <summary>
-        /// Clean content of existing file
+        /// Clean content of existing log file
         /// </summary>
         public static void CleanLog()
         {
-            if (log.LogFile.Exists)
+            if (log != null && log.LogFile.Exists)
             {
-                Document.Write(log.LogFile, String.Empty);
+                Document.WriteAllText(log.LogFile, String.Empty);
             }
         }
 
@@ -75,14 +81,14 @@ namespace cleaning_robot
         /// Write message to log file and console
         /// </summary>
         /// <param name="message">message to log</param>
-        public static void Write (string message)
+        public static void Write(string message)
         {
             DateTime now = DateTime.Now;
 
             message = $"{now.ToString()}: {message}";
 
             WriteToConsole(message);
-            WriteToLog(message);
+            WriteToLogFile(message);
         }
 
         /// <summary>
@@ -97,16 +103,16 @@ namespace cleaning_robot
             message = $"{now.ToString()} ({severity}): {message}";
 
             WriteToConsole(message);
-            WriteToLog(message);
+            WriteToLogFile(message);
         }
 
         /// <summary>
         /// Write message to log file
         /// </summary>
         /// <param name="message"></param>
-        public static void WriteToLog(string message)
+        public static void WriteToLogFile(string message)
         {
-            if(log != null)
+            if (log != null)
             {
                 Document.AppendText(log.LogFile, message);
             }
