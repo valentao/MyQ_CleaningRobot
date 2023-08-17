@@ -114,6 +114,7 @@ public class Robot
         {
             robot.Map = Map.GetMap(input.map);
             robot.Battery = input.battery;
+            LogBatteryLevel(robot.Battery);
             if (input.start != null)
             {
                 robot.Position = new Position(input.start.X, input.start.Y, input.start.Facing);
@@ -121,7 +122,7 @@ public class Robot
             else
             {
                 isPrepared = false;
-                Console.WriteLine("Starting position is not specified in input file.");
+                Log.Write("Starting position is not specified in input file.", Log.LogSeverity.Error);
             }
 
             if (input.commands != null)
@@ -137,7 +138,7 @@ public class Robot
             }
             else
             {
-                Console.WriteLine("No commands are specifiend in input file.");
+                Log.Write("No commands are specifiend in input file.", Log.LogSeverity.Warning);
             }
 
             bool isCellAccessible = Map.IsCellAccessible(robot.Position.X, robot.Position.Y);
@@ -148,8 +149,13 @@ public class Robot
             else
             {
                 isPrepared = false;
-                Console.WriteLine($"Starting position X:{robot.Position.X},Y:{robot.Position.Y} is not accessible.");
+                Log.Write($"Starting position X:{robot.Position.X},Y:{robot.Position.Y} is not accessible.", Log.LogSeverity.Error);
             }
+        }
+        else
+        {
+            isPrepared = false;
+            Log.Write($"Input file {file} does not contain valid input data", Log.LogSeverity.Error);
         }
 
         return isPrepared;
@@ -161,6 +167,7 @@ public class Robot
     /// <param name="file">output file</param>
     public static void SaveJson(FileInfo file)
     {
+        Log.Write("Output generation started.", Log.LogSeverity.Info);
         Output output = new Output();
         output.battery = robot.Battery;
         output.final = robot.Position;
@@ -180,7 +187,7 @@ public class Robot
         string outputJson = JsonConvert.SerializeObject(output);
         if (file.Exists)
         {
-            Console.WriteLine($"The output file {file} already exists and will be overwritten.");
+            Log.Write($"The output file {file} already exists and will be overwritten.", Log.LogSeverity.Warning);
         }
         Document.Write(file, outputJson);
     }
@@ -190,6 +197,7 @@ public class Robot
     /// </summary>
     public static void Start()
     {
+        Log.Write("Commands processing started.", Log.LogSeverity.Info);
         foreach (Command cmd in robot.CommandsArray)
         {
             if (IsBatteryEnough(cmd.Cost) && !robot.IsStucked)
@@ -200,12 +208,13 @@ public class Robot
             {
                 if (robot.IsStucked)
                 {
-                    Console.WriteLine("Robot is stucked. End of program.");
+                    Log.Write("Robot is stucked. End of program.", Log.LogSeverity.Warning);
                 }
                 else
                 {
-                    Console.WriteLine($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.");
+                    Log.Write($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.", Log.LogSeverity.Warning);
                 }
+                Log.Write("Early termination of the program", Log.LogSeverity.Warning);
                 break;
             }
         }
@@ -218,16 +227,17 @@ public class Robot
     /// <returns>movement was successful</returns>
     private static bool Move(Command command)
     {
-        Console.WriteLine($"Prepared move {command.Name}");
+        Log.Write($"Preparation to move {command.Name}", Log.LogSeverity.Info);
 
         bool isMove = true;
 
         robot.Battery -= command.Cost;
+        LogBatteryLevel(robot.Battery);
 
         if ((command == Command.TurnLeft || command == Command.TurnRight) && command.Turn != 0)
         {
             robot.Position.Facing = Turn(robot.Position.Facing, command.Turn);
-            Console.WriteLine($"{command.Name} to {robot.Position.Facing}");
+            Log.Write($"{command.Name} to {robot.Position.Facing}", Log.LogSeverity.Info);
         }
 
         if (command == Command.Advance)
@@ -238,7 +248,7 @@ public class Robot
             {
                 robot.Position = position;
                 robot.Visited.Add(new Cell(position.X, position.Y));
-                Console.WriteLine($"Advanced to X:{position.X},Y:{position.Y}");
+                Log.Write($"Advanced to X:{position.X},Y:{position.Y}", Log.LogSeverity.Info);
             }
             else
             {
@@ -256,7 +266,7 @@ public class Robot
             {
                 robot.Position = position;
                 robot.Visited.Add(new Cell(position.X, position.Y));
-                Console.WriteLine($"Returned to X:{position.X},Y:{position.Y}");
+                Log.Write($"Returned to X:{position.X},Y:{position.Y}", Log.LogSeverity.Info);
             }
             else
             {
@@ -269,7 +279,7 @@ public class Robot
         if (command == Command.Clean)
         {
             robot.Cleaned.Add(new Cell(robot.Position.X, robot.Position.Y));
-            Console.WriteLine($"Clean X:{robot.Position.X},Y:{robot.Position.Y}");
+            Log.Write($"Clean X:{robot.Position.X},Y:{robot.Position.Y}", Log.LogSeverity.Info);
         }
 
         return isMove;
@@ -280,7 +290,7 @@ public class Robot
     /// </summary>
     private static void BackOff()
     {
-        Console.WriteLine($"Back off sequence. Hit obstacle count: {robot.HitObstacleCount}.");
+        Log.Write($"Back off sequence [{robot.HitObstacleCount}].", Log.LogSeverity.Info);
 
         if (robot.HitObstacleCount > 5)
         {
@@ -324,5 +334,14 @@ public class Robot
     public static bool IsBatteryEnough(int cost)
     {
         return robot?.Battery >= cost;
+    }
+
+    /// <summary>
+    /// Write down current battery level
+    /// </summary>
+    /// <param name="batteryLevel">robot battery level</param>
+    public static void LogBatteryLevel(int batteryLevel)
+    {
+        Log.Write($"Battery level: {batteryLevel}", Log.LogSeverity.Info);
     }
 }

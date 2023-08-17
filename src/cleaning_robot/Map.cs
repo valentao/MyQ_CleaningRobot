@@ -68,7 +68,8 @@ public class Map
         // one of coordinates is negative
         if (x < 0 || y < 0)
         {
-            Console.WriteLine($"Position X:{x}, Y:{y} is out of map. None of the coordinates can be negative.");
+            Log.Write($"Position X:{x}, Y:{y} is out of map. None of the coordinates can be negative.", Log.LogSeverity.Warning);
+
             return false;
         }
         else
@@ -76,7 +77,7 @@ public class Map
             // x is out of map
             if (x > ColumnsCount)
             {
-                Console.WriteLine($"Position X:{x} is out of map. Max X value is {ColumnsCount}.");
+                Log.Write($"Position X:{x} is out of map. Max X value is {ColumnsCount}.", Log.LogSeverity.Warning);
                 return false;
             }
             else
@@ -84,7 +85,7 @@ public class Map
                 // y is out of map
                 if (y > RowsCount)
                 {
-                    Console.WriteLine($"Position Y:{y}  is out of map. Max Y value is  {RowsCount}.");
+                    Log.Write($"Position Y:{y}  is out of map. Max Y value is  {RowsCount}.", Log.LogSeverity.Warning);
                     return false;
                 }
             }
@@ -111,12 +112,12 @@ public class Map
             // null - empty cell
             if (cellAccessibility != null && cellAccessibility == "S")
             {
-                Console.WriteLine($"Position X:{x},Y:{y} is {cellAccessibility}.");
+                Log.Write($"Position X:{x},Y:{y} is {cellAccessibility}.", Log.LogSeverity.Info);
                 isAccessible = true;
             }
             else
             {
-                Console.WriteLine($"Position X:{x},Y:{y} is not accessible.");
+                Log.Write($"Position X:{x},Y:{y} is not accessible.", Log.LogSeverity.Warning);
                 isAccessible = false;
             }
         }
