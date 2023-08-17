@@ -6,6 +6,11 @@ class Program
 {
     public static void Main(string[] args)
     {
+        //string path = @"..\..\..\..\..\doc\test\test1.json";
+        //FileInfo test = new FileInfo(path);
+        //;
+
+
         if (args.Length == 2)
         {
             FileInfo inputFile = new FileInfo(args[0]);
@@ -21,7 +26,8 @@ class Program
             Log.GetLog(logFile);
             Log.CleanLog(); // clear content from log file
 
-            if (inputFile.Exists && inputFile.Extension == ".json" && outputFile.Extension == ".json")
+            if (Document.Exists(inputFile) && Document.IsJson(inputFile) && Document.IsJson(outputFile))
+            //if (inputFile.Exists && inputFile.Extension == ".json" && outputFile.Extension == ".json")
             {
                 Robot.GetRobot();
                 if (Robot.LoadJson(inputFile))
@@ -32,12 +38,14 @@ class Program
             }
             else
             {
-                if (inputFile.Extension != ".json")
+                if(!Document.IsJson(inputFile))
+                //if (inputFile.Extension != ".json")
                 {
                     Log.Write($"Input argument {inputFile} is not valid .json file.", Log.LogSeverity.Error);
                 }
 
-                if (outputFile.Extension != ".json")
+                if (!Document.IsJson(outputFile))
+                //if (outputFile.Extension != ".json")
                 {
                     Log.Write($"Output argument {outputFile} is not valid .json file.", Log.LogSeverity.Error);
                 }

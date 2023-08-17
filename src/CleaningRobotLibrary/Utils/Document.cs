@@ -5,6 +5,16 @@
 /// </summary>
 public class Document
 {
+    public static bool Exists(FileInfo file)
+    {
+        return file.Exists;
+    }
+
+    public static bool IsJson(FileInfo file)
+    {
+        return file.Exists && file.Extension == ".json";
+    }
+
     /// <summary>
     /// Read file
     /// </summary>

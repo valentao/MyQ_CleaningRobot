@@ -14,7 +14,7 @@ public class Robot
     /// <summary>
     /// Actual battery level
     /// </summary>
-    private int Battery { get; set; }
+    public int Battery { get; private set; }
 
     /// <summary>
     /// Current <see cref="Postion"/>
@@ -49,7 +49,7 @@ public class Robot
     /// <summary>
     /// Auxiliary flag that the robot cannot move
     /// </summary>
-    private bool IsStucked { get; set; }
+    public bool IsStucked { get; private set; }
 
     #endregion
 
@@ -321,7 +321,7 @@ public class Robot
     /// </summary>
     /// <param name="cost">Next move battery cost</param>
     /// <returns>robot has enough battery level for next move</returns>
-    private static bool IsBatteryEnough(int cost)
+    public static bool IsBatteryEnough(int cost)
     {
         return robot?.Battery >= cost;
     }

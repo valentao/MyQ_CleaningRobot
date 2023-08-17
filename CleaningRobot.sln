@@ -26,7 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ReadMe = ReadMe
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleaningRobotLibrary", "src\CleaningRobotLibrary\CleaningRobotLibrary.csproj", "{DB6CA9AF-8B56-44CF-ABDF-0881A88CE0C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleaningRobotLibrary", "src\CleaningRobotLibrary\CleaningRobotLibrary.csproj", "{DB6CA9AF-8B56-44CF-ABDF-0881A88CE0C5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E8EAFBDC-B5F8-4874-949F-3BE1B9994130}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleaningRobotTests", "tests\CleaningRobotTests\CleaningRobotTests.csproj", "{D6416C61-A1C2-43B2-B9FC-0EB7475D2F7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +46,10 @@ Global
 		{DB6CA9AF-8B56-44CF-ABDF-0881A88CE0C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB6CA9AF-8B56-44CF-ABDF-0881A88CE0C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB6CA9AF-8B56-44CF-ABDF-0881A88CE0C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6416C61-A1C2-43B2-B9FC-0EB7475D2F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6416C61-A1C2-43B2-B9FC-0EB7475D2F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6416C61-A1C2-43B2-B9FC-0EB7475D2F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6416C61-A1C2-43B2-B9FC-0EB7475D2F7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +58,7 @@ Global
 		{A23D9247-E944-4A72-B215-DFE238E7003F} = {03081B5C-BC1A-44A5-84D0-9227EC40B4A1}
 		{A9DB00B3-F816-4871-B6D0-84287E8C6911} = {DE71D45C-9287-4C9F-B451-9549F8402201}
 		{DB6CA9AF-8B56-44CF-ABDF-0881A88CE0C5} = {03081B5C-BC1A-44A5-84D0-9227EC40B4A1}
+		{D6416C61-A1C2-43B2-B9FC-0EB7475D2F7D} = {E8EAFBDC-B5F8-4874-949F-3BE1B9994130}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A449E2E5-D6EC-4E0C-9FD8-FCC00C2A81B5}
