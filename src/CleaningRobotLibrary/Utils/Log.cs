@@ -65,7 +65,7 @@ public class Log
     /// </summary>
     public static void CleanLog()
     {
-        if (log != null && log.LogFile.Exists)
+        if (log != null)
         {
             Document.WriteAllText(log.LogFile, String.Empty);
         }
