@@ -1,11 +1,6 @@
 ﻿namespace cleaning_robot;
 class Program
 {
-    public static void WriteBatteryStatus(int batteryStatus)
-    {
-        Console.WriteLine($"Battery: {batteryStatus}");
-    }
-
     public static void Main(string[] args)
     {
         Console.WriteLine($"Number of arguments: {args.Length}");
@@ -22,23 +17,28 @@ class Program
 
             FileInfo inputFile = new FileInfo(inputFileArg);
             FileInfo outputFile = new FileInfo(outputFileArg);
+            FileInfo logFile = new FileInfo(args[1].Replace(".json", ".txt"));
+
+            Log.GetLog(logFile);
+            Log.CleanLog();
+
             if (inputFile.Exists && inputFile.Extension == ".json")
             {
                 Robot.GetRobot();
                 if (Robot.LoadJson(inputFile))
                 {
                     Robot.Start();
+                    Robot.SaveJson(outputFile);
                 }
-                Robot.SaveJson(outputFile);
             }
             else
             {
-                Console.WriteLine($"Argument {inputFileArg} is not valid .json file");
+                Log.Write($"Argument {inputFileArg} is not valid .json file", Log.LogSeverity.Error);
             }
         }
         else
         {
-            Console.WriteLine("the application requires exactly 2 arguments");
+            Log.Write($"The application requires exactly 2 arguments. Number of arguments is {args.Length}", Log.LogSeverity.Error);
         }
 
         Console.ReadLine();
