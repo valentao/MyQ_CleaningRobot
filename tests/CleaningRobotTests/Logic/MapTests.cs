@@ -39,10 +39,19 @@ public class MapTests
     public void CellIsNotAccessible_CellIsNull()
     {
         //Arrange
-        string path = @"..\..\..\..\..\doc\test\test1.json";
-        FileInfo file = new FileInfo(path);
+        string inputJson = @"{
+  ""map"": [
+    [""S"", ""S"", ""S"", ""S""],
+    [""S"", ""S"", ""C"", ""S""],
+    [""S"", ""S"", ""S"", ""S""],
+    [""S"", ""null"", ""S"", ""S""]
+  ],
+  ""start"": {""X"": 3, ""Y"": 0, ""facing"": ""N""},
+  ""commands"": [ ""TL"",""A"",""C"",""A"",""C"",""TR"",""A"",""C""],
+  ""battery"": 80
+}";
 
-        Input? input = JsonSerializer.Deserialize<Input>(Document.ReadAllText(file));
+        Input? input = JsonSerializer.Deserialize<Input>(inputJson);
 
         Map.GetMap(input.Map);
 
@@ -60,11 +69,18 @@ public class MapTests
     public void CellIsNotAccessible_CellIsC()
     {
         //Arrange
-        string path = @"..\..\..\..\..\doc\test\test1.json";
-        FileInfo file = new FileInfo(path);
-
-        Input? input = JsonSerializer.Deserialize<Input>(Document.ReadAllText(file));
-
+        string inputJson = @"{
+  ""map"": [
+    [""S"", ""S"", ""S"", ""S""],
+    [""S"", ""S"", ""C"", ""S""],
+    [""S"", ""S"", ""S"", ""S""],
+    [""S"", ""null"", ""S"", ""S""]
+  ],
+  ""start"": {""X"": 3, ""Y"": 0, ""facing"": ""N""},
+  ""commands"": [ ""TL"",""A"",""C"",""A"",""C"",""TR"",""A"",""C""],
+  ""battery"": 80
+}";
+        Input? input = JsonSerializer.Deserialize<Input>(inputJson);
         Map.GetMap(input.Map);
 
         int x = 2;

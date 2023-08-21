@@ -25,11 +25,20 @@ public class RobotTests
     public void RobotIsStucked()
     {
         //Arange
-        string path = @"..\..\..\..\..\doc\test\testStucked.json";
-        FileInfo file = new FileInfo(path);
+        string inputJson = @"{
+  ""map"": [
+    [""S"", ""C"", ""S"", ""S""],
+    [""C"", ""S"", ""C"", ""S""],
+    [""S"", ""S"", ""S"", ""S""],
+    [""S"", ""null"", ""S"", ""S""]
+  ],
+  ""start"": {""X"": 0, ""Y"": 0, ""facing"": ""N""},
+  ""commands"": [ ""TL"",""A"",""C"",""A"",""C"",""TR"",""A"",""C""],
+  ""battery"": 80
+}";
 
         Robot robot = Robot.GetRobot();
-        Robot.LoadJson(file);
+        Robot.LoadJson(inputJson);
 
         //Act
         Robot.Start();
