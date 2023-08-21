@@ -28,7 +28,9 @@ class Program
             if (inputFileExists && inputFileIsJson && outputFileIsJson)
             {
                 Robot.GetRobot();
-                if (Robot.LoadJson(inputFile))
+
+                Log.Write($"Reading content from input file {inputFile}", Log.LogSeverity.Info);
+                if (Robot.LoadJson(Document.ReadAllText(inputFile)))
                 {
                     Robot.Start();
                     Robot.SaveJson(outputFile);

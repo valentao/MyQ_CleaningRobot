@@ -88,14 +88,13 @@ public class Robot
     /// <summary>
     /// Load input json file into robot instance
     /// </summary>
-    /// <param name="file">input json file</param>
+    /// <param name="inputJson">input json string</param>
     /// <returns>no input data is missing</returns>
-    public static bool LoadJson(FileInfo file)
+    public static bool LoadJson(string inputJson)
     {
         bool isPrepared = true;
-
-        Log.Write($"Reading content from input file {file}", Log.LogSeverity.Info);
-        Input? input = JsonSerializer.Deserialize<Input>(Document.ReadAllText(file));
+        
+        Input? input = JsonSerializer.Deserialize<Input>(inputJson);
 
         if (input != null && robot != null)
         {
@@ -142,7 +141,7 @@ public class Robot
         else
         {
             isPrepared = false;
-            Log.Write($"Input file {file} does not contain valid input data", Log.LogSeverity.Error);
+            Log.Write("Input file does not contain valid input data", Log.LogSeverity.Error);
         }
 
         return isPrepared;
