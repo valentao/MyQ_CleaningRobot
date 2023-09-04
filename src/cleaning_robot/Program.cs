@@ -1,5 +1,6 @@
 ﻿using CleaningRobotLibrary.Logic;
 using CleaningRobotLibrary.Utils;
+using System.Runtime.CompilerServices;
 
 namespace cleaning_robot;
 class Program
@@ -27,13 +28,13 @@ class Program
 
             if (inputFileExists && inputFileIsJson && outputFileIsJson)
             {
-                Robot.GetRobot();
+                Robot robot = Robot.GetRobot();
 
                 Log.Write($"Reading content from input file {inputFile}", Log.LogSeverity.Info);
-                if (Robot.LoadJson(Document.ReadAllText(inputFile)))
+                if (robot.LoadJson(Document.ReadAllText(inputFile)))
                 {
-                    Robot.Start();
-                    Robot.SaveJson(outputFile);
+                    robot.Start();
+                    robot.SaveJson(outputFile);
                 }
             }
             else
