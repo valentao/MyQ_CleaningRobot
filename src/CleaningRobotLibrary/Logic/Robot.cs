@@ -93,8 +93,18 @@ public class Robot
     public static bool LoadJson(string inputJson)
     {
         bool isPrepared = true;
-        
-        Input? input = JsonSerializer.Deserialize<Input>(inputJson);
+
+        Input? input = new Input();
+
+        try
+        {
+            input = JsonSerializer.Deserialize<Input>(inputJson);
+        }
+        catch (Exception ex)
+        {
+            Log.Write($"Invalid input: {ex.Message}", Log.LogSeverity.Error);
+            input = null;
+        }
 
         if (input != null && robot != null)
         {
