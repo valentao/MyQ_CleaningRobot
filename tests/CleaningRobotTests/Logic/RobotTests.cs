@@ -15,7 +15,7 @@ public class RobotTests
         Command cmd = Command.Advance;
 
         //Act
-        bool result = Robot.IsBatteryEnough(cmd.Cost);
+        bool result = robot.IsBatteryEnough(cmd.Cost);
 
         //Assert
         Assert.False(result, $"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.");
@@ -38,10 +38,10 @@ public class RobotTests
 }";
 
         Robot robot = Robot.GetRobot();
-        Robot.LoadJson(inputJson);
+        robot.LoadJson(inputJson);
 
         //Act
-        Robot.Start();
+        robot.Start();
         bool result = robot.IsStucked;
         
         //Assert

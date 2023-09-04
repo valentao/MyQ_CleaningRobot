@@ -90,7 +90,7 @@ public class Robot
     /// </summary>
     /// <param name="inputJson">input json string</param>
     /// <returns>no input data is missing</returns>
-    public static bool LoadJson(string inputJson)
+    public bool LoadJson(string inputJson)
     {
         bool isPrepared = true;
 
@@ -161,7 +161,7 @@ public class Robot
     /// Save result of robot's work to file
     /// </summary>
     /// <param name="file">output file</param>
-    public static void SaveJson(FileInfo file)
+    public void SaveJson(FileInfo file)
     {
         Log.Write("Output generation started.", Log.LogSeverity.Info);
 
@@ -194,7 +194,7 @@ public class Robot
     /// <summary>
     /// Proccessing loaded commands
     /// </summary>
-    public static void Start()
+    public void Start()
     {
         Log.Write("Commands processing started.", Log.LogSeverity.Info);
         foreach (Command cmd in robot.CommandsArray)
@@ -224,7 +224,7 @@ public class Robot
     /// </summary>
     /// <param name="command">Actual movement <see cref="Command"/></param>
     /// <returns>movement was successful</returns>
-    private static bool Move(Command command)
+    private bool Move(Command command)
     {
         Log.Write($"Preparation to command {command.Name}", Log.LogSeverity.Info);
 
@@ -287,7 +287,7 @@ public class Robot
     /// <summary>
     /// Loading and executing a single back off sequence
     /// </summary>
-    private static void BackOff()
+    private void BackOff()
     {
         Log.Write($"Back off sequence [{robot.HitObstacleCount}].", Log.LogSeverity.Info);
 
@@ -330,7 +330,7 @@ public class Robot
     /// </summary>
     /// <param name="cost">Next move battery cost</param>
     /// <returns>robot has enough battery level for next move</returns>
-    public static bool IsBatteryEnough(int cost)
+    public bool IsBatteryEnough(int cost)
     {
         return robot?.Battery >= cost;
     }
@@ -339,7 +339,7 @@ public class Robot
     /// Write down current battery level
     /// </summary>
     /// <param name="batteryLevel">robot battery level</param>
-    private static void LogBatteryLevel(int batteryLevel)
+    private void LogBatteryLevel(int batteryLevel)
     {
         Log.Write($"Battery level: {batteryLevel}", Log.LogSeverity.Info);
     }
