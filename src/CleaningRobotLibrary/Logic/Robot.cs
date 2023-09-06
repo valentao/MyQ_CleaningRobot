@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using CleaningRobotLibrary.Models;
 using CleaningRobotLibrary.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace CleaningRobotLibrary.Logic;
 
@@ -58,15 +59,19 @@ public class Robot
     /// </summary>
     private static Robot? robot = null;
 
+
+    private readonly ILogger _logger;
+
     /// <summary>
     /// Initialize new instance of <see cref="Robot"/> class.
     /// </summary>
-    private Robot()
+    private Robot(ILogger logger)
     {
         Visited = new List<Cell>();
         Cleaned = new List<Cell>();
         HitObstacleCount = 0;
         IsStucked = false;
+        _logger = logger;
     }
     //Lock Object
     private static object lockThis = new object();
@@ -75,12 +80,12 @@ public class Robot
     /// Return instance of <see cref="Robot"/> class 
     /// </summary>
     /// <returns>Instance of Robot object</returns>
-    public static Robot GetRobot()
+    public static Robot GetRobot(ILogger logger)
     {
         lock (lockThis)
         {
             if (Robot.robot == null)
-                robot = new Robot();
+                robot = new Robot(logger);
         }
         return robot;
     }
@@ -102,13 +107,14 @@ public class Robot
         }
         catch (Exception ex)
         {
-            Log.Write($"Invalid input: {ex.Message}", Log.LogSeverity.Error);
+            _logger.LogError($"Invalid input: {ex.Message}");
+            Log.Write(_logger, $"Invalid input: {ex.Message}", Log.LogSeverity.Error);
             input = null;
         }
 
         if (input != null && robot != null)
         {
-            robot.Map = Map.GetMap(input.Map);
+            robot.Map = Map.GetMap(_logger, input.Map);
             robot.Battery = input.Battery;
             LogBatteryLevel(robot.Battery);
             if (input.Start != null)
@@ -118,7 +124,7 @@ public class Robot
             else
             {
                 isPrepared = false;
-                Log.Write("Starting position is not specified in input file.", Log.LogSeverity.Error);
+                Log.Write(_logger, "Starting position is not specified in input file.", Log.LogSeverity.Error);
             }
 
             if (input.Commands != null)
@@ -134,7 +140,7 @@ public class Robot
             }
             else
             {
-                Log.Write("No commands are specifiend in input file.", Log.LogSeverity.Warning);
+                Log.Write(_logger, "No commands are specifiend in input file.", Log.LogSeverity.Warning);
             }
 
             bool isCellAccessible = Map.IsCellAccessible(robot.Position.X, robot.Position.Y);
@@ -145,13 +151,13 @@ public class Robot
             else
             {
                 isPrepared = false;
-                Log.Write($"Starting position X:{robot.Position.X},Y:{robot.Position.Y} is not accessible.", Log.LogSeverity.Error);
+                Log.Write(_logger, $"Starting position X:{robot.Position.X},Y:{robot.Position.Y} is not accessible.", Log.LogSeverity.Error);
             }
         }
         else
         {
             isPrepared = false;
-            Log.Write("Input file does not contain valid input data", Log.LogSeverity.Error);
+            Log.Write(_logger, "Input file does not contain valid input data", Log.LogSeverity.Error);
         }
 
         return isPrepared;
@@ -163,7 +169,7 @@ public class Robot
     /// <param name="file">output file</param>
     public void SaveJson(FileInfo file)
     {
-        Log.Write("Output generation started.", Log.LogSeverity.Info);
+        Log.Write(_logger, "Output generation started.", Log.LogSeverity.Info);
 
         Output output = new Output();
         output.Battery = robot.Battery;
@@ -185,9 +191,9 @@ public class Robot
 
         if (file.Exists)
         {
-            Log.Write($"The output file {file} already exists and will be overwritten.", Log.LogSeverity.Warning);
+            Log.Write(_logger, $"The output file {file} already exists and will be overwritten.", Log.LogSeverity.Warning);
         }
-        Log.Write($"Writting content to ouput file {file}", Log.LogSeverity.Info);
+        Log.Write(_logger, $"Writting content to ouput file {file}", Log.LogSeverity.Info);
         Document.WriteAllText(file, outputJson);
     }
 
@@ -196,7 +202,7 @@ public class Robot
     /// </summary>
     public void Start()
     {
-        Log.Write("Commands processing started.", Log.LogSeverity.Info);
+        Log.Write(_logger, "Commands processing started.", Log.LogSeverity.Info);
         foreach (Command cmd in robot.CommandsArray)
         {
             if (IsBatteryEnough(cmd.Cost) && !robot.IsStucked)
@@ -207,13 +213,13 @@ public class Robot
             {
                 if (robot.IsStucked)
                 {
-                    Log.Write("Robot is stucked. End of program.", Log.LogSeverity.Warning);
+                    Log.Write(_logger, "Robot is stucked. End of program.", Log.LogSeverity.Warning);
                 }
                 else
                 {
-                    Log.Write($"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.", Log.LogSeverity.Warning);
+                    Log.Write(_logger, $"Command {cmd.Name} requires more battery ({cmd.Cost}) than is actual capacity {robot.Battery}.", Log.LogSeverity.Warning);
                 }
-                Log.Write("Early termination of the program", Log.LogSeverity.Warning);
+                Log.Write(_logger, "Early termination of the program", Log.LogSeverity.Warning);
                 break;
             }
         }
@@ -226,7 +232,7 @@ public class Robot
     /// <returns>movement was successful</returns>
     private bool Move(Command command)
     {
-        Log.Write($"Preparation to command {command.Name}", Log.LogSeverity.Info);
+        Log.Write(_logger, $"Preparation to command {command.Name}", Log.LogSeverity.Info);
 
         bool isMove = true;
 
@@ -236,7 +242,7 @@ public class Robot
         if ((command == Command.TurnLeft || command == Command.TurnRight) && command.TurnDirection != 0)
         {
             robot.Position.Facing = Command.MoveTurn(robot.Position.Facing, command.TurnDirection);
-            Log.Write($"{command.Name} to {robot.Position.Facing}", Log.LogSeverity.Info);
+            Log.Write(_logger, $"{command.Name} to {robot.Position.Facing}", Log.LogSeverity.Info);
         }
 
         if (command == Command.Advance)
@@ -247,7 +253,7 @@ public class Robot
             {
                 robot.Position = position;
                 robot.Visited.Add(new Cell(position.X, position.Y));
-                Log.Write($"Advanced to X:{position.X},Y:{position.Y}", Log.LogSeverity.Info);
+                Log.Write(_logger, $"Advanced to X:{position.X},Y:{position.Y}", Log.LogSeverity.Info);
             }
             else
             {
@@ -265,7 +271,7 @@ public class Robot
             {
                 robot.Position = position;
                 robot.Visited.Add(new Cell(position.X, position.Y));
-                Log.Write($"Returned to X:{position.X},Y:{position.Y}", Log.LogSeverity.Info);
+                Log.Write(_logger, $"Returned to X:{position.X},Y:{position.Y}", Log.LogSeverity.Info);
             }
             else
             {
@@ -278,7 +284,7 @@ public class Robot
         if (command == Command.Clean)
         {
             robot.Cleaned.Add(new Cell(robot.Position.X, robot.Position.Y));
-            Log.Write($"Clean X:{robot.Position.X},Y:{robot.Position.Y}", Log.LogSeverity.Info);
+            Log.Write(_logger, $"Clean X:{robot.Position.X},Y:{robot.Position.Y}", Log.LogSeverity.Info);
         }
 
         return isMove;
@@ -289,7 +295,7 @@ public class Robot
     /// </summary>
     private void BackOff()
     {
-        Log.Write($"Back off sequence [{robot.HitObstacleCount}].", Log.LogSeverity.Info);
+        Log.Write(_logger, $"Back off sequence [{robot.HitObstacleCount}].", Log.LogSeverity.Info);
 
         if (robot.HitObstacleCount > 5)
         {
@@ -341,6 +347,6 @@ public class Robot
     /// <param name="batteryLevel">robot battery level</param>
     private void LogBatteryLevel(int batteryLevel)
     {
-        Log.Write($"Battery level: {batteryLevel}", Log.LogSeverity.Info);
+        Log.Write(_logger, $"Battery level: {batteryLevel}", Log.LogSeverity.Info);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CleaningRobotLibrary.Utils;
+﻿using Microsoft.Extensions.Logging;
+
+namespace CleaningRobotLibrary.Utils;
 
 /// <summary>
 /// Class representing log
@@ -75,13 +77,14 @@ public class Log
     /// Write message to log file and console
     /// </summary>
     /// <param name="message">message to log</param>
-    public static void Write(string message)
+    public static void Write(ILogger logger, string message)
     {
         DateTime now = DateTime.Now;
 
         message = $"{now.ToString()}: {message}";
 
-        WriteToConsole(message);
+        logger.LogDebug(message);
+        //WriteToConsole(message);
         WriteToLogFile(message);
     }
 
@@ -90,13 +93,29 @@ public class Log
     /// </summary>
     /// <param name="message">message to log</param>
     /// <param name="severity">log severity identificator</param>
-    public static void Write(string message, LogSeverity severity)
+    public static void Write(ILogger logger, string message, LogSeverity severity)
     {
         DateTime now = DateTime.Now;
 
         message = $"{now.ToString()} ({severity}): {message}";
 
-        WriteToConsole(message);
+        //WriteToConsole(message);
+
+        switch (severity)
+        {
+            case LogSeverity.Info:
+                logger.LogInformation(message);
+                break;
+            case LogSeverity.Warning:
+                logger.LogWarning(message);
+                break;
+            case LogSeverity.Error:
+                logger.LogError(message);
+                break;
+            default:
+                logger.LogDebug(message);
+                break;
+        }
         WriteToLogFile(message);
     }
 

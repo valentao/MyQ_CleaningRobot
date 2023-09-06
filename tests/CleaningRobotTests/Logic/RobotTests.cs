@@ -1,17 +1,46 @@
 ﻿using CleaningRobotLibrary.Logic;
 using CleaningRobotLibrary.Models;
 using CleaningRobotLibrary.Utils;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Text.Json;
 
 namespace CleaningRobotTests.Logic;
 
 public class RobotTests
 {
+    private ILogger _logger;
+
+    public RobotTests()
+    {
+        using var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddFilter("Microsoft", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning)
+                .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug);
+        });
+        _logger = loggerFactory.CreateLogger<RobotTests>();
+    }
+    //using var loggerFactory = LoggerFactory.Create(builder =>
+    //    {
+    //        builder
+    //            .AddFilter("Microsoft", LogLevel.Warning)
+    //            .AddFilter("System", LogLevel.Warning)
+    //            .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+    //            .AddConsole();
+    //    });
+
+    //using var loggerFactory = LoggerFactory.Create(builder => {
+    //    bui
+    //});
+
+
     [Fact]
     public void RobotHasNotEnoughBattery()
     {
         //Arrange
-        Robot robot = Robot.GetRobot(); // default battery value is 0
+        Robot robot = Robot.GetRobot(_logger); // default battery value is 0
         Command cmd = Command.Advance;
 
         //Act
@@ -37,7 +66,7 @@ public class RobotTests
   ""battery"": 80
 }";
 
-        Robot robot = Robot.GetRobot();
+        Robot robot = Robot.GetRobot(_logger);
         robot.LoadJson(inputJson);
 
         //Act
