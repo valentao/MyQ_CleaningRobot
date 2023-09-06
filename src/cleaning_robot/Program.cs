@@ -1,5 +1,6 @@
 ﻿using CleaningRobotLibrary.Logic;
 using CleaningRobotLibrary.Utils;
+using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
 
 namespace cleaning_robot;
@@ -7,6 +8,17 @@ class Program
 {
     public static void Main(string[] args)
     {
+        using var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddFilter("Microsoft", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning)
+                .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+                .AddConsole();
+        });
+        ILogger logger = loggerFactory.CreateLogger<Program>();
+        //logger.LogInformation("Example log message");
+
         if (args.Length == 2)
         {
             FileInfo inputFile = new FileInfo(args[0]);
@@ -28,9 +40,9 @@ class Program
 
             if (inputFileExists && inputFileIsJson && outputFileIsJson)
             {
-                Robot robot = Robot.GetRobot();
+                Robot robot = Robot.GetRobot(logger);
 
-                Log.Write($"Reading content from input file {inputFile}", Log.LogSeverity.Info);
+                Log.Write(logger, $"Reading content from input file {inputFile}", Log.LogSeverity.Info);
                 if (robot.LoadJson(Document.ReadAllText(inputFile)))
                 {
                     robot.Start();
@@ -41,23 +53,23 @@ class Program
             {
                 if (!inputFileExists)
                 {
-                    Log.Write($"Input file {inputFile} does not exist");
+                    Log.Write(logger, $"Input file {inputFile} does not exist", Log.LogSeverity.Error);
                 }
 
                 if (!inputFileIsJson)
                 {
-                    Log.Write($"Input argument {inputFile} is not valid .json file.", Log.LogSeverity.Error);
+                    Log.Write(logger, $"Input argument {inputFile} is not valid .json file.", Log.LogSeverity.Error);
                 }
 
                 if (!outputFileIsJson)
                 {
-                    Log.Write($"Output argument {outputFile} is not valid .json file.", Log.LogSeverity.Error);
+                    Log.Write(logger, $"Output argument {outputFile} is not valid .json file.", Log.LogSeverity.Error);
                 }
             }
         }
         else
         {
-            Log.Write($"The application requires exactly 2 arguments. Number of arguments is {args.Length}.", Log.LogSeverity.Error);
+            Log.Write(logger, $"The application requires exactly 2 arguments. Number of arguments is {args.Length}.", Log.LogSeverity.Error);
         }
 
         Console.ReadLine();
